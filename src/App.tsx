@@ -3,21 +3,27 @@ import { useState } from 'react'
 // import viteLogo from '/vite.svg'
 
 // import { BrowserRouter as Router, Route, RouterProvider } from 'react-router-dom'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, BrowserRouter } from 'react-router-dom'
 
 // import Root, { rootLoader } from "./routes/root";
 // import Team, { teamLoader } from "./routes/team";
 
 import './App.css'
-// import './assets/css/materialdesignicons.min.css'
+import './assets/css/materialdesignicons.min.css'
 import './assets/css/vendor.bundle.base.css'
 
-import HomePage from './components/HomePage'
+
+// import './assets/js/vendors/vendor.bundle.base.js'
+
+import HomePage from './components/Home/HomePage'
 import ErrorPage from './components/error/ErrorPage'
 import EmployeeForms from './components/forms/EmployeeForms'
 
 // auth
 import LoginPage from "./components/auth/LoginPage"
+import SideMenu from './components/Home/SideMenu'
+import Navbar from './components/Home/Navbar'
+import Footer from './components/Footer/Footer'
 
 
 const router = createBrowserRouter([
@@ -43,7 +49,18 @@ function App() {
 
   return (
     <>
-      <RouterProvider router={router} />
+      <div className="container-scroller d-flex">
+        <BrowserRouter><SideMenu/></BrowserRouter>
+        <div className="container-fluid page-body-wrapper">
+          <Navbar />
+          <div className="main-panel">
+            <div className="content-wrapper">
+              <RouterProvider router={router} />
+            </div>
+            <Footer />
+          </div>
+        </div>
+      </div>
     </>
   )
 }
