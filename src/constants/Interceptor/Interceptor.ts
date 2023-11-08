@@ -1,8 +1,12 @@
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: 'http://localhost:8000/api',
-});
+import { BASE_ENDPOINT } from "../api/BaseEndpoint";
+import { REFRESH_TOKEN } from "../api/jwt"
+import { useNavigate } from 'react-router-dom';
+
+const api = axios.create({ baseURL: BASE_ENDPOINT, });
+
+const navigate = useNavigate();
 
 // Add a request interceptor
 api.interceptors.request.use(
@@ -32,7 +36,7 @@ api.interceptors.response.use(
 
       try {
         const refreshToken = localStorage.getItem('refresh');
-        const response = await axios.post('/token/refresh', { refreshToken });
+        const response = await axios.post(`${BASE_ENDPOINT}/${REFRESH_TOKEN}`, { refreshToken });
         const { token } = response.data;
 
         localStorage.setItem('access', token);
@@ -40,8 +44,18 @@ api.interceptors.response.use(
         // Retry the original request with the new token
         originalRequest.headers.Authorization = `Bearer ${token}`;
         return axios(originalRequest);
-      } catch (error) {
+      } catch (error: any) {
         // Handle refresh token error or redirect to login
+
+        // Check if the access token and refresh token are expired or invalid
+        if (error.response.status === 401) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('refresh');
+          navigate("auth/login"); // Redirect to login page
+        } else {
+          // Handle other errors
+          throw new Error('Unhandled error'); // Throw an error exception
+        }
       }
     }
 

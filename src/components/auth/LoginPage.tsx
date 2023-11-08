@@ -3,33 +3,12 @@ import { useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
 
 import logo from "../../assets/images/logo.svg";
-
-import { Button, Form, Input, Checkbox } from "antd";
 import axios from "axios";
-
-type AuthFieldType = {
-  username?: string;
-  password?: string;
-  remember?: string;
-};
-
-interface LoginFormData {
-  username: string;
-  password: string;
-}
 
 interface credentials {
   username: string,
   password: string
 }
-
-type authProps = {
-  credentials: { username: string; password: string };
-  setCredentials: React.Dispatch<
-    React.SetStateAction<{ username: string; password: string }>
-  >;
-  handleSubmit: (e: any) => Promise<void>;
-};
 
 const LoginPage = () => {
 
@@ -109,7 +88,7 @@ const LoginPage = () => {
               </div>
               <div className="col-lg-6 login-half-bg d-none d-lg-flex flex-row">
                 <p className="text-white font-weight-medium text-center flex-grow align-self-end">
-                  Copyright &copy; 2018 All rights reserved.
+                  Copyright &copy; {new Date().getFullYear()} All rights reserved.
                 </p>
               </div>
             </div>

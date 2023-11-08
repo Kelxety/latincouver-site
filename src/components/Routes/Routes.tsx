@@ -3,6 +3,8 @@ import React from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 
 import HomePageContainer from "../Home/HomePageContainer"
+import DashboardContainer from "../Dashboard/DashboardContainer"
+
 // HR module
 import HRContainer from "../HR/HRContainer"
 import EmployeesContainer from "../HR/Employees/EmployeesContainer"
@@ -21,6 +23,10 @@ const Routes = () => {
           element: <HomePageContainer />,
           errorElement: <ErrorPage />,
           children: [
+            {
+              path: "/",
+              element: <DashboardContainer/>
+            },
             {
               path: "hr",
               element: <HRContainer />,

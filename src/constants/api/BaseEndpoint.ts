@@ -1,5 +1,1 @@
-import axios from "axios";
-
-export default axios.create({
-    baseURL: `http://localhost:8000/api`
-})
+export const BASE_ENDPOINT: string =  import.meta.env.VITE_BASE_ENDPOINT
