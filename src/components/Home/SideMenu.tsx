@@ -57,7 +57,7 @@ function SideMenu() {
               <div>
                 <ul className="nav flex-column sub-menu">
                   <li className="nav-item">
-                    <Link to="/hr/employee" className="nav-link">
+                    <Link to="hr/employee" className="nav-link">
                       Employees
                     </Link>
                   </li>

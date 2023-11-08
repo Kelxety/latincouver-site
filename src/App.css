@@ -11517,6 +11517,10 @@ input[type="button"].btn-block {
   display: none;
 }
 
+/* .collapse.show {
+  background-color: red;
+} */
+
 .collapsing {
   position: relative;
   height: 0;
@@ -11762,6 +11766,8 @@ input[type="button"].btn-block {
 .dropdown-menu.show {
   display: block;
 }
+
+
 
 .dropdown-header {
   display: block;
@@ -20346,7 +20352,7 @@ dl li {
 /* === Landing screens === */
 /* Auth */
 .auth .login-half-bg {
-  background: url("../public/images/loginpic.jpg");
+  background: url("./assets//images/covers/loginpic.jpg");
   background-size: cover;
 }
 
@@ -20491,7 +20497,8 @@ dl li {
 }
 
 .content-wrapper {
-  background: #f6f7fb;
+  /* background: #f6f7fb; */
+  background-color: #EDF1F5;
   padding: 1.937rem 1.437rem;
   width: 100%;
   -webkit-flex-grow: 1;
@@ -20725,7 +20732,7 @@ dl li {
   -moz-transition: background 0.25s ease;
   -ms-transition: background 0.25s ease;
   /* background: url(../images/other/navbar-cover.jpg) center center no-repeat; */
-  background: url(../public/images/navbar-cover.jpg) center center no-repeat;
+  background: url(./assets/images/covers/navbar-cover.jpg) center center no-repeat;
   background-size: cover;
   height: 262px;
   width: auto;
@@ -21026,7 +21033,9 @@ dl li {
 }
 
 /* Layouts */
+/* this layout is for minimize sidebar */
 @media (min-width: 992px) {
+
   .sidebar-icon-only .page-body-wrapper {
     width: calc(100% - 70px);
   }
@@ -21058,6 +21067,10 @@ dl li {
   .sidebar-icon-only .sidebar .nav .nav-item {
     position: relative;
   }
+
+
+  /* every .nav-link class when sidebar is minimize */
+
   .sidebar-icon-only .sidebar .nav .nav-item .nav-link {
     display: block;
     padding-left: .5rem;
@@ -21065,6 +21078,9 @@ dl li {
     text-align: center;
     position: static;
   }
+
+
+
   .sidebar-icon-only .sidebar .nav .nav-item .nav-link .menu-title,
   .sidebar-icon-only .sidebar .nav .nav-item .nav-link .badge, .sidebar-icon-only .sidebar .nav .nav-item .nav-link .menu-sub-title {
     display: none;
@@ -21072,14 +21088,30 @@ dl li {
   .sidebar-icon-only .sidebar .nav .nav-item .nav-link .menu-title {
     border-radius: 0 5px 5px 0px;
   }
+  /* align when sidebar is minimize */
   .sidebar-icon-only .sidebar .nav .nav-item .nav-link i.menu-icon {
     margin-right: 0;
     margin-left: 0;
     margin-bottom: 0;
   }
-  .sidebar-icon-only .sidebar .nav .nav-item .nav-link i.menu-arrow {
+
+  /* icon if sidebar is minimize */
+  .sidebar-icon-only .sidebar .nav .nav-item .nav-link .menu-icon {
+    margin-right: 0;
+    margin-left: 15px;
+    margin-bottom: 0;
+    text-align: center;
+  }
+
+
+  /* .sidebar-icon-only .sidebar .nav .nav-item .nav-link i.menu-arrow {
+    display: none;
+  } */
+
+  .sidebar-icon-only .sidebar .nav .nav-item .nav-link .menu-arrow-icon {
     display: none;
   }
+
   .sidebar-icon-only .sidebar .nav .nav-item .nav-link[aria-expanded] .menu-title {
     border-radius: 0 5px 0 0px;
   }
