@@ -6,8 +6,6 @@ import { useNavigate } from 'react-router-dom';
 
 const api = axios.create({ baseURL: BASE_ENDPOINT, });
 
-const navigate = useNavigate();
-
 // Add a request interceptor
 api.interceptors.request.use(
   (config) => {
@@ -49,6 +47,8 @@ api.interceptors.response.use(
 
         // Check if the access token and refresh token are expired or invalid
         if (error.response.status === 401) {
+          const navigate = useNavigate();
+          
           localStorage.removeItem('token');
           localStorage.removeItem('refresh');
           navigate("auth/login"); // Redirect to login page

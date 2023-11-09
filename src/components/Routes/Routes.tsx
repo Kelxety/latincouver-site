@@ -9,6 +9,7 @@ import DashboardContainer from "../Dashboard/DashboardContainer"
 import HRContainer from "../HR/HRContainer"
 import EmployeesContainer from "../HR/Employees/EmployeesContainer"
 import ProfileContainer from "../HR/Employees/Profile/ProfileContainer"
+import VolunteerContainer from "../HR/Volunteers/VolunteerContainer"
 
 // Auth
 import LoginPage from "../auth/LoginPage"
@@ -39,6 +40,10 @@ const Routes = () => {
             {
               path: "hr/employee/profile",
               element: <ProfileContainer />,
+            },
+            {
+              path: "hr/volunteers",
+              element: <VolunteerContainer />,
             },
           ]
         },

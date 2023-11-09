@@ -34,7 +34,7 @@ const HRView = () => {
 
             <div className='flex justify-center items-center lm:w-[18.75rem] md:w-[14.375rem] laptopL:w-full'>
                 <Card className='w-full h-customheight167 shadow-md'>
-                    <Link to={"/"} className='flex flex-col justify-center items-center hover:no-underline text-center'>
+                    <Link to={`volunteers`} className='flex flex-col justify-center items-center hover:no-underline text-center'>
                         <Icon path={mdiHandHeart} size={4} className='text-primary' title={"Volunteers"} />
                         <p className='hover:no-underline'>VOLUNTEERS</p>
                     </Link>
