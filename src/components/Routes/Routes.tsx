@@ -38,11 +38,15 @@ const Routes = () => {
             },
       
             {
-              path: "hr/employees/:employeeId",
+              path: "hr/employees/employee/:employeeId",
               element: <ProfileContainer />,
             },
             {
               path: "hr/volunteers",
+              element: <VolunteerContainer />,
+            },
+            {
+              path: "hr/volunteers/volunteer/:volunteerId",
               element: <VolunteerContainer />,
             },
           ]

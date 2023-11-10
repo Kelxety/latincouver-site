@@ -31,12 +31,8 @@ const columns: ColumnsType<EmployeeDataType> = [
     render: (_, { department }) => (
       <>
         {department.map((tag) => {
-          let color: string = 'green';
-          if (tag === 'loser') {
-            color = 'volcano';
-          }
           return (
-            <Tag color={color} key={tag}>
+            <Tag color={'green'} key={tag}>
               {tag.toUpperCase()}
             </Tag>
           );
@@ -50,7 +46,7 @@ const columns: ColumnsType<EmployeeDataType> = [
     key: 'pk',
     render: (_, record) => (
       <Space size="middle">
-        <Link to={`${record.key}`} className='bg-primary btn-primary py-2.5 px-6 rounded-md'>Profile</Link>
+        <Link to={`employee/${record.key}`} className='bg-primary btn-primary py-2.5 px-6 rounded-md'>Profile</Link>
         <Link to={`/`} className='bg-danger btn-danger py-2.5 px-6 rounded-md'>Delete</Link>
       </Space>
     ),
@@ -82,7 +78,14 @@ interface EmployeeDataType {
 const EmployeeView = ({employees}: EmployeeProps) => {
 
   return (
-    <><Table columns={columns} dataSource={employees} onChange={onChange} /></>
+    <>
+      <div className='mb-3 flex justify-end'>
+        <Button type="primary" className='bg-primary btn-primary' disabled>
+          Add Employees
+        </Button>
+      </div>
+      <Table columns={columns} dataSource={employees} onChange={onChange} />
+    </>
   )
 }
 
