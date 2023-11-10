@@ -38,7 +38,7 @@ const Routes = () => {
             },
       
             {
-              path: "hr/employee/profile",
+              path: "hr/employees/:employeeId",
               element: <ProfileContainer />,
             },
             {

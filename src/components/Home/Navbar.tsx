@@ -2,9 +2,11 @@ import {
   mdiAccountCircle,
   mdiAccountGroup,
   mdiArrowRightThin,
+  mdiCalendar,
   mdiCalendarAccount,
   mdiCogOutline,
   mdiCurrencyUsd,
+  mdiHandshake,
   mdiLogout,
   mdiMenu,
   mdiNotebook,
@@ -61,13 +63,13 @@ function Navbar() {
           </li>
           <li className="nav-item">
             <Link className="nav-link" to={"/"}>
-              <i className="mdi mdi-grid-large menu-icon"></i>
+              <Icon path={mdiCalendar} style={{"width": "20px", "height": "20px", "marginRight": "10px"}} className="menu-icon" />
               <span className="menu-title">Events</span>
             </Link>
           </li>
           <li className="nav-item">
             <Link className="nav-link" to={"/"}>
-              <i className="mdi mdi-emoticon menu-icon"></i>
+              <Icon path={mdiHandshake} style={{"width": "20px", "height": "20px", "marginRight": "10px"}} />
               <span className="menu-title">Grants</span>
             </Link>
           </li>

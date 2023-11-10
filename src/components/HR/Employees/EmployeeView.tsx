@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import { Space, Table, Tag, Button } from 'antd';
 import type { ColumnsType,TableProps } from 'antd/es/table';
+import { Link } from 'react-router-dom';
 
 
 const columns: ColumnsType<EmployeeDataType> = [
@@ -45,11 +46,12 @@ const columns: ColumnsType<EmployeeDataType> = [
   },
   {
     title: 'Action',
-    key: 'action',
+    dataIndex: 'pk',
+    key: 'pk',
     render: (_, record) => (
       <Space size="middle">
-        <Button type="link" className='btn-primary bg-primary'>View Profile</Button>
-        <Button type="link" className='btn-danger bg-danger'>Delete</Button>
+        <Link to={`${record.key}`} className='bg-primary btn-primary py-2.5 px-6 rounded-md'>Profile</Link>
+        <Link to={`/`} className='bg-danger btn-danger py-2.5 px-6 rounded-md'>Delete</Link>
       </Space>
     ),
   },
