@@ -15,7 +15,7 @@ function ProfileContainer() {
     const [profile, setProfile] = useState<any>();
     const navigate = useNavigate();
 
-    useEffect(() => {
+      useEffect(() => {
         const fetchProfile = async () => {
           try {
             const response: any = await api.get(`${HR_EMPLOYEE_DETAIL}/${employeeID}`);

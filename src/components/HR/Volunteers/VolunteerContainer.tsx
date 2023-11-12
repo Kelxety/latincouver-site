@@ -21,6 +21,10 @@ interface VolunteerDataType {
 function VolunteerContainer() {
     const [volunteers, setVolunteers] = useState<VolunteerDataType[]>([]);
     const navigate = useNavigate();
+
+    console.log("outside");
+
+    useEffect(()=> {})
     
     return <VolunteerView volunteers={volunteers} />
 }
