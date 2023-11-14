@@ -4,6 +4,7 @@ const hr: string = `${API_VERSION}/hr`
 
 // employees
 export const HR_EMPLOYEES: string =  `${hr}/employees/`
+export const HR_EMPLOYEES_RECORDS = `${hr}/employee-records/`
 export const HR_EMPLOYEE_DETAIL: string =  `${hr}/employees/detail`
 export const HR_CONTRACTORS: string =  `${hr}/contractors/`
 export const JOB_TITLES: string =  `${hr}/job-titles/`

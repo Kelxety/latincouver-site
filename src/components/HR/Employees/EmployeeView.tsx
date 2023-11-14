@@ -1,65 +1,14 @@
 import React, { useEffect, useState } from 'react'
 
-import { Space, Table, Tag, Button, Modal, Divider, Form, Input, Select, InputNumber, Checkbox, DatePicker } from 'antd';
+import { Space, Table, Tag, Button, Modal, Divider, Form, Input, Select, InputNumber, Checkbox, DatePicker, Upload, message } from 'antd';
 import type { ColumnsType,TableProps } from 'antd/es/table';
 import { Link } from 'react-router-dom';
 
 import { EmployeeDataType, JobTitleDataType, DepartmentDataType, UsersDataType } from "../../../constants/interface/it"
-import { workType } from "../../../constants/choices/choices"
 
 
-const { RangePicker } = DatePicker;
-
-
-const columns: ColumnsType<EmployeeDataType> = [
-  {
-    title: 'First Name',
-    dataIndex: 'fname',
-    key: 'fname',
-    render: (text, record) => <Link to={`employee/${record.key}`}>{text}</Link>,
-    sorter: (a, b) => a.fname.length - b.fname.length,
-  },
-  {
-    title: 'Last Name',
-    dataIndex: 'lname',
-    key: 'lname',
-    render: (text, record) => <Link to={`employee/${record.key}`}>{text}</Link>,
-  },
-  {
-    title: 'Gender',
-    dataIndex: 'gender',
-    key: 'gender',
-  },
-  {
-    title: 'Department',
-    dataIndex: 'department',
-    key: 'department',
-    render: (_, { department }) => (
-      <>
-        {department.map((tag) => {
-          return (
-            <Tag color={'green'} key={tag}>
-              {tag.toUpperCase()}
-            </Tag>
-          );
-        })}
-      </>
-    ),
-  },
-  {
-    title: 'Action',
-    dataIndex: 'pk',
-    key: 'pk',
-    render: (_, record) => (
-      <div className='flex justify-center'>
-        <Space size="middle">
-          <Link to={`employee/${record.key}`} className='bg-primary btn-primary py-2.5 px-6 rounded-md hover:no-underline'>Profile</Link>
-          <Link to={`/`} className='bg-danger btn-danger py-2.5 px-6 rounded-md hover:no-underline'>Delete</Link>
-        </Space>
-      </div>
-    ),
-  },
-];
+import type { UploadProps } from "antd";
+import { UploadOutlined } from '@ant-design/icons';
 
 const onChange: TableProps<EmployeeDataType>["onChange"] = (
   pagination,
@@ -76,60 +25,76 @@ type SelectData = {
 }
 
 type EmployeeProps = {
-  employees: EmployeeDataType[],
+  employee_data: any,
   open: boolean,
   confirmLoading: boolean,
   handleCancel: () => void,
   handleOk: () => void,
   showModal: () => void,
-  loading: boolean,
-  jobtitles: JobTitleDataType[],
-  departments: DepartmentDataType[],
-  users: UsersDataType[],
+  employee_data_loading: boolean,
+  confirmDelete: () => void,
+  contextHolder: React.ReactElement<any, string | React.JSXElementConstructor<any>>,
+  departments_api_data: any,
+  handleChangeDepartments:  (value: string[]) => void,
+  job_titles: any,
+  onChangeFormJobTitle: (value: string) => void,
+  handleChangeWorkType: (value: string) => void;
+  users_api_data: any;
 
 }
 
 const EmployeeView = ({
-  employees, open, confirmLoading, handleCancel, handleOk, showModal, loading, jobtitles, departments, users
+  employee_data, open, confirmLoading, handleCancel, handleOk, showModal, employee_data_loading,
+  confirmDelete, contextHolder, departments_api_data, handleChangeDepartments, job_titles, onChangeFormJobTitle, handleChangeWorkType,
+  users_api_data,
 }: EmployeeProps) => {
 
-  const [jobTitle, setJobTitle] = useState<SelectData[]>([]);
-  const [departmentData, setDepartmentData] = useState<SelectData[]>([]);
-  const [userData, setUserData] = useState<SelectData[]>([]);
 
-  useEffect(()=> {
-    setJobTitle(jobtitles?.map((job: any) => {
-      return {
-        value: `${job?.key}`,
-        label: job?.name.toUpperCase()
-      }
-    }))
+  // const tableProps: TableProps<EmployeeDataType> = {loading};
 
-    setDepartmentData(departments?.map((depart: any) => {
-      return {
-        value: `${depart?.key}`,
-        label: depart?.name.toUpperCase()
-      }
-    }))
-
-    setUserData(users?.map((user: any) => {
-      return {
-        value: user?.key,
-        label: `${user?.first_name} ${user?.last_name}`
-      }
-    }))
-
-
-  }, [jobtitles, departments, users]);
-
-  console.log(`workType:`);
-  console.table(workType)
-
-  const tableProps: TableProps<EmployeeDataType> = {loading};
-
-  const onChangeForm = (value: string) => {
-    console.log(`selected ${value}`);
-  };
+  const columns: ColumnsType<EmployeeDataType> = [
+    {
+      title: 'Name',
+      dataIndex: 'user',
+      key: 'user',
+      render: (text, record) => <Link to={`employee/${record?.key}`}>{text}</Link>,
+    },
+    {
+      title: 'Gender',
+      dataIndex: 'gender',
+      key: 'gender',
+    },
+    {
+      title: 'Department',
+      dataIndex: 'department',
+      key: 'department',
+      render: (_, { department }) => (
+        <>
+          {department.map((tag) => {
+            return (
+              <Tag color={'green'} key={tag}>
+                {tag.toUpperCase()}
+              </Tag>
+            );
+          })}
+        </>
+      ),
+    },
+    {
+      title: 'Action',
+      dataIndex: 'pk',
+      key: 'pk',
+      render: (_, record) => (
+        <div className='flex justify-center'>
+          <Space size="middle">
+            <Link to={`employee/${record.key}`} className='bg-primary btn-primary text-sm py-1.5 px-3 rounded-md hover:no-underline'>Profile</Link>
+            <Button onClick={confirmDelete} className='text-sm' type='primary' danger>Delete</Button>
+            {contextHolder}
+          </Space>
+        </div>
+      ),
+    },
+  ];
 
   const onSearch = (value: string) => {
     console.log('search:', value);
@@ -140,15 +105,40 @@ const filterOption = (input: string, option?: { label: string; value: string }) 
   (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
 
+  const props: UploadProps = {
+    name: "file",
+    action: "https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188",
+    headers: {
+      authorization: "authorization-text"
+    },
+    onChange(info) {
+      if (info.file.status !== "uploading") {
+        console.log("HAHAHAHAHAHHA");
+        console.log(info.file, info.fileList);
+      }
+      if (info.file.status == "uploading") {
+        console.log("HAHAHAHAHAHHA");
+      }
+      if (info.file.status === "done") {
+        message.success(`${info.file.name} file uploaded successfully`);
+      } else if (info.file.status === "error") {
+        message.error(`${info.file.name} file upload failed.`);
+      }
+    }
+  };
+
+
   return (
     <>
-      <div className='mb-3 flex justify-end'>
+      <div className='mb-3 flex justify-between'>
+        <h1>Employees</h1>
         <Button type="primary" className='bg-primary btn-primary' onClick={showModal}>
           Add Employees
         </Button>
       </div>
 
-      <Table {...tableProps} columns={columns} dataSource={employees} onChange={onChange} />
+      <Table columns={columns} dataSource={employee_data} onChange={onChange} loading={employee_data_loading} />
+      {/* {...tableProps} */}
 
       <Modal
         title="Add Employee"
@@ -163,42 +153,37 @@ const filterOption = (input: string, option?: { label: string; value: string }) 
         }}
       >
         <form className='mt-4'>
-          <div className='grid grid-cols-4 grid-rows-3 gap-4'>
+          <div className='grid grid-cols-4 grid-rows-3 gap-4 mb-3'>
             <div className='grid gap-1'>
               <label htmlFor="">Title</label>
               <Select
                 showSearch
                 placeholder="Job Title"
                 optionFilterProp="children"
-                onChange={onChangeForm}
+                onChange={onChangeFormJobTitle}
                 onSearch={onSearch}
                 filterOption={filterOption}
-                options={jobTitle}
+                options={job_titles}
               />
             </div>
             <div className='grid gap-1'>
               <label htmlFor="">Work Type</label>
               <Select
-                showSearch
                 placeholder="Work Type"
-                optionFilterProp="children"
-                onChange={onChangeForm}
-                onSearch={onSearch}
-                filterOption={filterOption}
-                options={jobTitle}
+                onChange={handleChangeWorkType}
+                options={[
+                  { value: "FT", label: "Full Time" },
+                  { value: "PT", label: "Part Time" },
+                ]}
               />
             </div>
-
             <div className='grid gap-1'>
-              <label htmlFor="">Salary</label>
-              <InputNumber min={1} max={999999} defaultValue={0} />
+              <label htmlFor="">Start Date</label>
+              <DatePicker />
             </div>
-            {/* <div>
-              <Checkbox>Is Manager</Checkbox>
-            </div> */}
             <div className='grid gap-1'>
-              <label htmlFor="">Start Date - End Date</label>
-              <RangePicker />
+              <label htmlFor="">End Date</label>
+              <DatePicker />
             </div>
             <div className='grid gap-1'>
               <label htmlFor="">Department</label>
@@ -206,9 +191,8 @@ const filterOption = (input: string, option?: { label: string; value: string }) 
                   mode="multiple"
                   style={{ width: '100%' }}
                   placeholder="Department"
-                  // defaultValue={['a10', 'c12']}
-                  // onChange={handleChange}
-                  options={departmentData}
+                  onChange={handleChangeDepartments}
+                  options={departments_api_data}
                 />
             </div>
             <div className='grid gap-1'>
@@ -225,12 +209,49 @@ const filterOption = (input: string, option?: { label: string; value: string }) 
                 showSearch
                 placeholder="User"
                 optionFilterProp="children"
-                onChange={onChangeForm}
+                onChange={handleChangeDepartments}
                 onSearch={onSearch}
                 filterOption={filterOption}
-                options={userData}
+                options={users_api_data}
               />
             </div>
+            <div className='grid gap-1'>
+              <label htmlFor="">Salary</label>
+              <InputNumber min={1} max={999999} defaultValue={0} style={{ width: "auto" }} />
+            </div>
+            <div className='grid gap-1'>
+              <label htmlFor="">Gender</label>
+              <Select
+                defaultValue="ML"
+                style={{ width: "auto" }}
+                // onChange={handleChange}
+                options={[
+                  { value: 'ML', label: 'Male' },
+                  { value: 'FM', label: 'Female' },
+                  { value: 'Others', label: 'Others' },
+                ]}
+              />
+            </div>
+            <div className='grid gap-1'>
+              <label htmlFor="">Contact</label>
+              <Input placeholder="Contact" />
+            </div>
+            <div className='grid gap-1'>
+              <label htmlFor="">Notes</label>
+              <Input placeholder="Notes" />
+            </div>
+            <div className='grid gap-1'>
+              <label htmlFor="">Bio</label>
+              <Input placeholder="Bio" />
+            </div>
+            <div className='mt-5'>
+              <Checkbox>Is Manager</Checkbox>
+            </div>
+          </div>
+          <div>
+            <Upload {...props}>
+              <Button icon={<UploadOutlined />}>Upload Profile Picture</Button>
+            </Upload>
           </div>
         </form>
       </Modal>

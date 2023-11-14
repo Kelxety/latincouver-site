@@ -1,110 +1,97 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import EmployeeView from "./EmployeeView"
 
-import { AUTH_LOGIN } from "../../../constants/api/auth"
-import { HR_EMPLOYEES, JOB_TITLES, HR_DEPARTMENTS } from "../../../constants/api/hr"
-import { USERS } from "../../../constants/api/users"
+
+import { HR_DEPARTMENTS, HR_EMPLOYEES_RECORDS, JOB_TITLES } from "../../../constants/api/hr"
 
 import api from '../../../constants/Interceptor/Interceptor'
-import { useLoaderData, useNavigate } from 'react-router-dom'
 
-import { EmployeeDataType, JobTitleDataType, DepartmentDataType, UsersDataType } from "../../../constants/interface/it"
+import { ExclamationCircleOutlined } from '@ant-design/icons'
+import { Modal } from 'antd'
+import { useQuery } from 'react-query'
+import { USERS } from '../../../constants/api/users'
 
 function EmployeesContainer() {
-
-    const [employees, setEmployees] = useState<EmployeeDataType[]>([]);
-    const [jobtitles, setJobtitles] = useState<JobTitleDataType[]>([]);
-    const [departments, setDepartments] = useState<DepartmentDataType[]>([]);
-    const [users, setUsers] = useState<UsersDataType[]>([]);
-
-    const [loading, setIsLoading] = useState<boolean>(true);
 
     const [open, setOpen] = useState<boolean>(false);
     const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
 
-    const navigate = useNavigate();
+    const [modal, contextHolder] = Modal.useModal();
 
-    const abortController = new AbortController();
+    // const { isLoading: employee_data_loading, error: employee_data_err, data: employee_res} = useQuery('emploteeData', () => 
+    // api.get(HR_EMPLOYEES_RECORDS).then(res => res.data)
+    // )
 
-    useEffect(() => {
+    const { isLoading: employee_data_loading, error: employee_data_err, data: employee_res } = useQuery({
+      queryFn: () => api.get(HR_EMPLOYEES_RECORDS).then(res => res.data),
+      queryKey: ['employeeData'],
+      cacheTime: 3,
+    })
 
-      const get_data_api = async () => {
+    const employee_data:any = useMemo(() => {
 
-        function getEmployeeRecords() { return api.get(HR_EMPLOYEES); }
-        
-        function getJobTitles() { return api.get(JOB_TITLES); }
-
-        function getDepartments() { return api.get(HR_DEPARTMENTS); }
-
-        function getusers() { return api.get(USERS); }
-
-        setIsLoading(true);
-  
-        try {
-
-          const [
-            employee_res_data, job_titles_res_data, department_res_data, users_res_data
-          ] = await Promise.all(
-            [getEmployeeRecords(), getJobTitles(), getDepartments(), getusers()]
-          );
-
-          const employee_data: any = employee_res_data?.data?.results || [];
-          const job_title_data: any = job_titles_res_data?.data?.results || [];
-          const department_data: any = department_res_data?.data?.results || [];
-          const users_data: any = users_res_data?.data?.results || [];
-
-          if(employee_data !== null && employee_data.length !== 0){
-            setEmployees(employee_data.map((row: any) => {
-              return {
-                key: row?.pk,
-                fname: row?.user?.first_name,
-                lname: row?.user?.last_name,
-                gender: row?.gender === 1 ? "Male" : row?.gender === 2 ? "Female" : "Others",
-                department: row?.department,
-              }
-            }))
-          }
-
-          if(job_title_data !== null && job_title_data.length !== 0){
-            setJobtitles(job_title_data.map((row: any) => {
-              return {
-                key: row?.id,
-                name: row?.name,
-                status: row?.status,
-              }
-            }))
-          }
-
-          if(department_data !== null && department_data.length !== 0){
-            setDepartments(department_data.map((row: any) => {
-              return {
-                key: row?.id,
-                name: row?.name,
-              }
-            }))
-          }
-
-          if(users_data !== null && users_data.length !== 0){
-            setUsers(users_data.map((row: any) => {
-              return {
-                key: row?.id,
-                first_name: row?.first_name,
-                last_name: row?.last_name,
-              }
-            }))
-          }
-
-        } catch (error) {
-          console.log(`error: ${error}`);
-        } finally {
-          setIsLoading(false);
+      return employee_res?.results.map((data: any) => {
+        return {
+          key: data?.pk,
+          user: data?.user,
+          department: data?.department,
+          title: data?.title,
+          bio: data?.bio,
+          notes: data?.notes,
+          start_date: data?.start_date,
+          end_date: data?.end_date,
+          is_manager: data?.is_manager,
+          medical_condition: data?.medical_condition,
+          alergies: data?.allergies,
+          gender: data?.gender === 1 ? "Male" : data?.gender === 2 ? "Female" : "Others",
+          photo: data?.photo,
+          contract: data?.contract,
+          salary: data?.salary,
+          work_type: data?.work_type === 1 ? "Full Time" : "Part Time",
+          payment_method: data?.pay_method === 1 ? "Salary" : "Hourly",
         }
-      }
+      })
+    }, [employee_res]);
 
-      get_data_api();
+    const {isLoading: loadingDepartment, data: departmentData, error: departmentError} = useQuery('departmentData', () =>
+      api.get(`${HR_DEPARTMENTS}`).then(res => res.data)
+    )
 
-      return () =>  { abortController.abort(); }
-    }, []);
+    const departments_api_data = useMemo(()=> {
+      return departmentData?.results?.map((data: any) => {
+        return {
+          value: data?.id,
+          label: data?.name.toUpperCase(),
+        }
+      })
+    }, [departmentData])
+
+    const {isLoading: job_title_loading, data: job_title_res_data} = useQuery('jobtitleData', () =>
+      api.get(`${JOB_TITLES}`).then(res => res.data)
+    );
+
+    const job_titles = useMemo(()=> {
+      return job_title_res_data?.results.map((data: any) => {
+        return {
+          value: data?.id,
+          label: data?.name,
+        }
+      })
+    }, [job_title_res_data])
+
+    const { isLoading: users_loading, data: users_data } = useQuery('usersData', () =>
+      api.get(`${USERS}`).then(res => res.data)
+    )
+  
+
+    const users_api_data = useMemo(()=> {
+      return users_data?.results.map((data: any) => {
+        return {
+          value: data?.id,
+          label: `${data?.first_name} ${data?.last_name}`
+        }
+      })
+    }, [users_data])
 
     const handleOk = () => {
       setConfirmLoading(true);
@@ -121,13 +108,36 @@ function EmployeesContainer() {
     };
 
     const showModal = () => { setOpen(true); }
-    // console.log("users");
-    // console.table(users);
+    const confirmDelete = () => {
+      modal.confirm({
+        title: 'Confirm',
+        icon: <ExclamationCircleOutlined />,
+        content: 'Delete this Employee Record?',
+        okText: 'Delete',
+        cancelText: 'Cancel',
+        okButtonProps: {style: { backgroundColor: "#f83e37", color: "white" }}
+      });
+    };
+
+    const handleChangeDepartments = (value: string[]) => {
+      console.log(`selected ${value}`);
+    };
+
+    const onChangeFormJobTitle = (value: string) => {
+      console.log(`selected ${value}`);
+    };
+
+    const handleChangeWorkType = (value: string) => {
+      console.log(`selected ${value}`);
+    };
+
     return(
       <EmployeeView
-        employees={employees} open={open} confirmLoading={confirmLoading} handleCancel={handleCancel}
-        handleOk={handleOk} showModal={showModal} loading={loading} jobtitles={jobtitles} departments={departments}
-        users={users}
+        employee_data={employee_data} open={open} confirmLoading={confirmLoading} handleCancel={handleCancel}
+        handleOk={handleOk} showModal={showModal} employee_data_loading={employee_data_loading}
+        confirmDelete={confirmDelete} contextHolder={contextHolder} departments_api_data={departments_api_data}
+        handleChangeDepartments={handleChangeDepartments} job_titles={job_titles} onChangeFormJobTitle={onChangeFormJobTitle}
+        handleChangeWorkType={handleChangeWorkType} users_api_data={users_api_data}
       />
     )
   };
