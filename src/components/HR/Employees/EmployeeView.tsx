@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
-import { Space, Table, Tag, Button, Modal, Divider, Form, Input, Select, InputNumber, Checkbox, DatePicker, Upload, message } from 'antd';
+import { Space, Table, Tag, Button, Modal, Input, Select, InputNumber, Checkbox, DatePicker, Upload, message } from 'antd';
 import type { ColumnsType,TableProps } from 'antd/es/table';
+import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { Link } from 'react-router-dom';
 
-import { EmployeeDataType, JobTitleDataType, DepartmentDataType, UsersDataType } from "../../../constants/interface/it"
+import { EmployeeDataType } from "../../../constants/interface/it"
 
 
 import type { UploadProps } from "antd";
-import { UploadOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, CloseCircleOutlined, UploadOutlined } from '@ant-design/icons';
 
 const onChange: TableProps<EmployeeDataType>["onChange"] = (
   pagination,
@@ -19,20 +20,15 @@ const onChange: TableProps<EmployeeDataType>["onChange"] = (
   console.log("params", pagination, filters, sorter, extra);
 };
 
-type SelectData = {
-  value: string,
-  label: string,
-}
-
 type EmployeeProps = {
-  employee_data: any,
+  employee_res_data: any,
   open: boolean,
   confirmLoading: boolean,
   handleCancel: () => void,
   handleOk: () => void,
   showModal: () => void,
   employee_data_loading: boolean,
-  confirmDelete: () => void,
+  confirmDelete: (pk: number, fname: string, lname: string) => void,
   contextHolder: React.ReactElement<any, string | React.JSXElementConstructor<any>>,
   departments_api_data: any,
   handleChangeDepartments:  (value: string[]) => void,
@@ -40,37 +36,53 @@ type EmployeeProps = {
   onChangeFormJobTitle: (value: string) => void,
   handleChangeWorkType: (value: string) => void;
   users_api_data: any;
+  onChangeStartDate: (date: any) => void,
+  onChangeEndDate: (date: any) => void,
+  onChangeIsManager: (e: CheckboxChangeEvent) => void,
+  handleChangeBio: (value: string) => void,
+  handleChangeNotes: (value: string) => void,
+  handleChangeContract: (value: string) => void,
+  handleChangeGender: (value: string) => void,
+  onChangeSalary: (value: number) => void,
+  handleChangeUser: (value: number) => void,
+  onChangeAllergies: (value: string) => void,
+  onChangeMedicalCondition: (value: string) => void,
 
 }
 
 const EmployeeView = ({
-  employee_data, open, confirmLoading, handleCancel, handleOk, showModal, employee_data_loading,
+  employee_res_data, open, confirmLoading, handleCancel, handleOk, showModal, employee_data_loading,
   confirmDelete, contextHolder, departments_api_data, handleChangeDepartments, job_titles, onChangeFormJobTitle, handleChangeWorkType,
-  users_api_data,
+  users_api_data, onChangeStartDate, onChangeEndDate, onChangeIsManager, handleChangeBio, handleChangeNotes, handleChangeContract,
+  handleChangeGender, onChangeSalary, handleChangeUser, onChangeAllergies, onChangeMedicalCondition
 }: EmployeeProps) => {
 
-
-  // const tableProps: TableProps<EmployeeDataType> = {loading};
-
-  const columns: ColumnsType<EmployeeDataType> = [
+  const columns: ColumnsType<any> = [
     {
-      title: 'Name',
-      dataIndex: 'user',
-      key: 'user',
-      render: (text, record) => <Link to={`employee/${record?.key}`}>{text}</Link>,
+      title: 'First Name',
+      dataIndex: 'first_name',
+      key: 'first_name',
+      render: (text, record) => <Link to={`employee/${record?.key}`}>{text.toLowerCase().replace(/\b\w/g, (s: string) => s.toUpperCase())}</Link>,
     },
     {
-      title: 'Gender',
-      dataIndex: 'gender',
-      key: 'gender',
+      title: 'Last Name',
+      dataIndex: 'last_name',
+      key: 'last_name',
+      render: (text, record) => <Link to={`employee/${record?.key}`}>{text.toLowerCase().replace(/\b\w/g, (s: string) => s.toUpperCase())}</Link>,
+    },
+    {
+      title: 'Job Title',
+      dataIndex: 'role',
+      key: 'role',
+      render: (text) => <p>{text.toLowerCase().replace(/\b\w/g, (s: string) => s.toUpperCase())}</p>
     },
     {
       title: 'Department',
-      dataIndex: 'department',
-      key: 'department',
-      render: (_, { department }) => (
+      dataIndex: 'department_names',
+      key: 'department_names',
+      render: (_, { department_names }) => (
         <>
-          {department.map((tag) => {
+          {department_names.map((tag: any) => {
             return (
               <Tag color={'green'} key={tag}>
                 {tag.toUpperCase()}
@@ -81,14 +93,39 @@ const EmployeeView = ({
       ),
     },
     {
+      title: 'Work Type',
+      dataIndex: 'work_type',
+      key: 'work_type',
+    },
+    {
+      title: 'Start Date',
+      dataIndex: 'start_date',
+      key: 'start_date',
+    },
+    {
+      title: 'End Date',
+      dataIndex: 'end_date',
+      key: 'end_date',
+    },
+    {
+      title: 'Manager',
+      dataIndex: 'is_manager',
+      key: 'is_manager',
+      render: (_, record) => (
+        <div>
+          {record?.is_manager ? <CheckCircleOutlined className='text-success' /> : <CloseCircleOutlined className='text-danger' />}
+        </div>
+      ),
+    },
+    {
       title: 'Action',
       dataIndex: 'pk',
       key: 'pk',
       render: (_, record) => (
-        <div className='flex justify-center'>
+        <div className='flex justify-start'>
           <Space size="middle">
             <Link to={`employee/${record.key}`} className='bg-primary btn-primary text-sm py-1.5 px-3 rounded-md hover:no-underline'>Profile</Link>
-            <Button onClick={confirmDelete} className='text-sm' type='primary' danger>Delete</Button>
+            <Button onClick={() => confirmDelete(record?.key, record?.first_name, record?.last_name)} className='text-sm' type='primary' danger>Delete</Button>
             {contextHolder}
           </Space>
         </div>
@@ -113,11 +150,9 @@ const filterOption = (input: string, option?: { label: string; value: string }) 
     },
     onChange(info) {
       if (info.file.status !== "uploading") {
-        console.log("HAHAHAHAHAHHA");
         console.log(info.file, info.fileList);
       }
       if (info.file.status == "uploading") {
-        console.log("HAHAHAHAHAHHA");
       }
       if (info.file.status === "done") {
         message.success(`${info.file.name} file uploaded successfully`);
@@ -137,8 +172,7 @@ const filterOption = (input: string, option?: { label: string; value: string }) 
         </Button>
       </div>
 
-      <Table columns={columns} dataSource={employee_data} onChange={onChange} loading={employee_data_loading} />
-      {/* {...tableProps} */}
+      <Table columns={columns} dataSource={employee_res_data} onChange={onChange} loading={employee_data_loading} />
 
       <Modal
         title="Add Employee"
@@ -146,6 +180,7 @@ const filterOption = (input: string, option?: { label: string; value: string }) 
         onOk={handleOk}
         confirmLoading={confirmLoading}
         onCancel={handleCancel}
+        destroyOnClose={true}
         okText="Confirm"
         width={1000}
         okButtonProps={{
@@ -179,11 +214,11 @@ const filterOption = (input: string, option?: { label: string; value: string }) 
             </div>
             <div className='grid gap-1'>
               <label htmlFor="">Start Date</label>
-              <DatePicker />
+              <DatePicker onChange={onChangeStartDate} />
             </div>
             <div className='grid gap-1'>
               <label htmlFor="">End Date</label>
-              <DatePicker />
+              <DatePicker onChange={onChangeEndDate} />
             </div>
             <div className='grid gap-1'>
               <label htmlFor="">Department</label>
@@ -197,11 +232,11 @@ const filterOption = (input: string, option?: { label: string; value: string }) 
             </div>
             <div className='grid gap-1'>
               <label htmlFor="">Medical Condition</label>
-              <Input placeholder="Medical Condition" />
+              <Input placeholder="Medical Condition" onChange={(e) => onChangeMedicalCondition(e.target.value)} />
             </div>
             <div className='grid gap-1'>
               <label htmlFor="">Allergies</label>
-              <Input placeholder="Allergies" />
+              <Input placeholder="Allergies" onChange={(e) => onChangeAllergies(e.target.value)} />
             </div>
             <div className='grid gap-1'>
               <label htmlFor="">User</label>
@@ -209,7 +244,7 @@ const filterOption = (input: string, option?: { label: string; value: string }) 
                 showSearch
                 placeholder="User"
                 optionFilterProp="children"
-                onChange={handleChangeDepartments}
+                onChange={handleChangeUser}
                 onSearch={onSearch}
                 filterOption={filterOption}
                 options={users_api_data}
@@ -217,35 +252,34 @@ const filterOption = (input: string, option?: { label: string; value: string }) 
             </div>
             <div className='grid gap-1'>
               <label htmlFor="">Salary</label>
-              <InputNumber min={1} max={999999} defaultValue={0} style={{ width: "auto" }} />
+              <InputNumber min={1} max={999999} defaultValue={0} style={{ width: "auto" }} onChange={(e: any) => onChangeSalary(e)} />
             </div>
             <div className='grid gap-1'>
               <label htmlFor="">Gender</label>
               <Select
-                defaultValue="ML"
                 style={{ width: "auto" }}
-                // onChange={handleChange}
+                onChange={handleChangeGender}
                 options={[
                   { value: 'ML', label: 'Male' },
                   { value: 'FM', label: 'Female' },
-                  { value: 'Others', label: 'Others' },
+                  { value: 'OT', label: 'Others' },
                 ]}
               />
             </div>
             <div className='grid gap-1'>
               <label htmlFor="">Contact</label>
-              <Input placeholder="Contact" />
+              <Input placeholder="Contact" onChange={(e) => handleChangeContract(e.target.value)} />
             </div>
             <div className='grid gap-1'>
               <label htmlFor="">Notes</label>
-              <Input placeholder="Notes" />
+              <Input placeholder="Notes" onChange={(e) => handleChangeNotes(e.target.value)} />
             </div>
             <div className='grid gap-1'>
               <label htmlFor="">Bio</label>
-              <Input placeholder="Bio" />
+              <Input placeholder="Bio" onChange={(e) => handleChangeBio(e.target.value)} />
             </div>
             <div className='mt-5'>
-              <Checkbox>Is Manager</Checkbox>
+              <Checkbox onChange={onChangeIsManager}>Is Manager</Checkbox>
             </div>
           </div>
           <div>

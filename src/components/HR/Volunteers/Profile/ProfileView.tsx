@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import default_profile_picture from "../../../../assets/images/profiles/default/default_profile_picture.png";
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, Select } from "antd";
 
 
 type LayoutType = Parameters<typeof Form>[0]["layout"];
@@ -21,17 +21,19 @@ const ProfileView = ({ profile }: EmployeeProfileProps) => {
         setFormLayout(layout);
     };
 
-    const stringifiedDepartmentNames: string = profile?.department.length === 1 ? profile?.department[0].toUpperCase() : profile?.department.join(", ").toUpperCase();
+
+    const onSearch = (value: string) => {
+      console.log('search:', value);
+    };
 
   return (
     <>
       <section className="grid gap-4 md:grid-cols-2">
         <div className="bg-white text-center p-12 shadow-md md:h-80 md:flex md:flex-col md:items-center xl:w-full">
-          <img src={profile?.photo || default_profile_picture} alt="" className="rounded-full object-fill text-center border-solid border-2 border-indigo-600 md:h-32 md:w-32" />
+          <img src={profile?.photo} alt="" className="rounded-full object-cover text-center border-solid border-4 border-neutral-400 md:h-32 md:w-32" />
           <h2 className="mt-4 text-[25px] subpixel-antialiased font-semibold mb-2">
-            {profile?.user?.first_name} {profile?.user?.last_name}
+            {profile?.user_info}
           </h2>
-          <p className="text-[15px]">{stringifiedDepartmentNames}</p>
           <small className="text-slate-400 text-[15px]">
             {profile?.gender === 1 ? "Male" : profile?.gender === 2 ? "Female" : "Male"}
           </small>
@@ -48,44 +50,28 @@ const ProfileView = ({ profile }: EmployeeProfileProps) => {
             size={"large"}
           >
             <div className="grid gap-3 sm:grid-cols-2">
-                <Form.Item label="Job Title">
-                    <Input placeholder="Job Title" value={profile?.title} />
+                <Form.Item label="Application">
+                    <Input placeholder="Application" value={profile?.applciation_name} />
                 </Form.Item>
-                <Form.Item label="Work Type">
-                    <Input placeholder="Work Type" value={profile?.work_type === 1 ? "Full time" : "Part time"} />
+                <Form.Item label="Supervisor">
+                    <Input placeholder="supervisor" value={profile?.salary} />
                 </Form.Item>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-                <Form.Item label="Salary">
-                    <Input placeholder="Salary" value={profile?.salary} />
-                </Form.Item>
-                <Form.Item label="Payment Method">
-                    <Input placeholder="Payment Method" value={profile?.payment_method === 1 ? "Salary" : "Hourly"} />
-                </Form.Item>
-            </div>
-            <div className="grid gap-3 min-[425px]:grid-cols-2">
-                <Form.Item label="Start Date">
-                    <Input placeholder="Start Date" value={profile?.start_date} />
-                </Form.Item>
-                <Form.Item label="End Date">
-                    <Input placeholder="End Date" value={profile?.end_date} />
-                </Form.Item>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-                <Form.Item label="Allergies">
-                    <Input placeholder="Allergies" value={profile?.allergies} />
-                </Form.Item>
-                <Form.Item label="Medical Condition">
-                    <Input placeholder="Medical Condition" value={profile?.medical_condition} />
-                </Form.Item>
-            </div>
-            <div className="grid gap-3">
-                <Form.Item label="Bio">
-                <Input.TextArea rows={6} value={profile?.bio} />
-                </Form.Item>
-                <Form.Item label="Notes">
-                <Input.TextArea rows={6} value={profile?.notes} />
+                <Form.Item label="Country">
+                  <Select
+                    showSearch
+                    onSearch={onSearch}
+                    defaultValue="lucy"
+                    style={{ width: 200 }}
+                    // onChange={handleChange}
+                    options={[
+                      { value: 'jack', label: 'Jack' },
+                      { value: 'lucy', label: 'Lucy' },
+                      { value: 'Yiminghe', label: 'yiminghe' },
+                      { value: 'disabled', label: 'Disabled', disabled: true },
+                    ]}
+                  />
                 </Form.Item>
             </div>
             <Form.Item>

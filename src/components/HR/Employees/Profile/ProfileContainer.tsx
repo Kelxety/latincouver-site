@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import ProfileView from "./ProfileView"
 import { useParams } from 'react-router-dom';
 
-import { HR_EMPLOYEE_DETAIL, JOB_TITLES, HR_DEPARTMENTS } from "../../../../constants/api/hr"
+import { HR_EMPLOYEE_DETAIL, JOB_TITLES, HR_DEPARTMENTS, HR_EMPLOYEES } from "../../../../constants/api/hr"
 
 import api from "../../../../constants/Interceptor/Interceptor"
 import { useQuery } from 'react-query';
@@ -11,21 +11,17 @@ import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import type { DatePickerProps } from 'antd';
 
 import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
 
 function ProfileContainer() {
 
     const params: any = useParams();
-
-    // var profile_department: any[] = [];
-    // const [profile_department, setProfileDepartment] = useState<any[]>([]);
 
     const [employee_profile_data, setEmployeeProfileData] = useState<any>();
 
     const employeeID: number = params.employeeId;
 
     const {isLoading: profile_loading, error: profile_err, data: profile_data} = useQuery({
-      queryFn: () => api.get(`${HR_EMPLOYEE_DETAIL}/${employeeID}`).then(res => res.data),
+      queryFn: () => api.get(`${HR_EMPLOYEES}${employeeID}/`).then(res => res.data),
       queryKey: ['profiles'],
       cacheTime: 0,
     })
@@ -33,8 +29,8 @@ function ProfileContainer() {
     let employee_profile = useMemo(()=> {
       return {
         pk: profile_data?.pk,
-        user: profile_data?.user,
-        department: profile_data?.department,
+        user: `${profile_data?.user_info?.first_name} ${profile_data?.user_info?.last_name}`,
+        department: profile_data?.department_names,
         title: profile_data?.title,
         bio: profile_data?.bio,
         notes: profile_data?.notes,
@@ -72,16 +68,12 @@ function ProfileContainer() {
       return job_title_res_data?.results.map((data: any) => {
         return {
           value: data?.id,
-          label: data?.name,
+          label: data?.name.toLowerCase().replace(/\b\w/g, (s: string) => s.toUpperCase()),
         }
       })
     }, [job_title_res_data])
 
-    // const {isLoading: loadingDepartment, data: departmentData, error: departmentError} = useQuery('departmentData', () =>
-    //   api.get(`${HR_DEPARTMENTS}`).then(res => res.data)
-    // )
-
-    const {isLoading: loadingDepartment, data: department_res_data, error: departmentError} = useQuery({
+    const {data: department_res_data} = useQuery({
       queryFn: () => api.get(`${HR_DEPARTMENTS}`).then(res => res.data),
       queryKey: ['departmentData'],
       cacheTime: 0,
@@ -165,9 +157,6 @@ function ProfileContainer() {
     };
 
     const handleChangeNotes = (value: string) => {
-      console.log(`value: ${value}`);
-
-      console.log(`notes:: ${employee_profile_data?.notes}`);
 
       setEmployeeProfileData((prevState: any) => ({
         ...prevState,
@@ -192,7 +181,7 @@ function ProfileContainer() {
     const onChangeMedicalCondition = (value: string) => {
       setEmployeeProfileData((prevState: any) => ({
         ...prevState,
-        medical_condition: value,
+        medical_conditions: value,
       }));
     }
 
@@ -217,6 +206,13 @@ function ProfileContainer() {
       }));
     };
 
+    const onChangeContract = (value: string) => {
+      setEmployeeProfileData((prevState: any) => ({
+        ...prevState,
+        contract: value,
+      }));
+    }
+
     return (
       <
         ProfileView
@@ -226,7 +222,7 @@ function ProfileContainer() {
         departments_api_data={departments_api_data} onChangeIsManager={onChangeIsManager} profile_department={profile_department}
         handleChangeNotes={handleChangeNotes} handleChangeBio={handleChangeBio} onChangeAllergies={onChangeAllergies}
         onChangeMedicalCondition={onChangeMedicalCondition} employee_profile_data={employee_profile_data} onChangeSalary={onChangeSalary}
-        onChangeStartDate={onChangeStartDate} onChangeEndDate={onChangeEndDate}
+        onChangeStartDate={onChangeStartDate} onChangeEndDate={onChangeEndDate} onChangeContract={onChangeContract}
       />
     )
 }

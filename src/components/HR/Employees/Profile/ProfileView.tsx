@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 
-import default_profile_picture from "../../../../assets/images/profiles/default/default_profile_picture.png";
 import {
   Form,
   Input,
@@ -38,6 +37,7 @@ type EmployeeProfileProps = {
   onChangeSalary: (value: number) => void,
   onChangeStartDate: any,
   onChangeEndDate: any,
+  onChangeContract: (value: string) => void,
 };
 
 
@@ -63,6 +63,7 @@ const ProfileView = ({
   onChangeSalary,
   onChangeStartDate,
   onChangeEndDate,
+  onChangeContract,
 }: EmployeeProfileProps) => {
   const [form] = Form.useForm();
 
@@ -82,12 +83,12 @@ const ProfileView = ({
           <>
             <div className="bg-white text-center p-12 shadow-lg rounded-lg md:h-80 md:flex md:flex-col md:items-center xl:w-full">
               <img
-                src={employee_profile?.photo || default_profile_picture}
+                src={employee_profile?.photo}
                 alt=""
-                className="rounded-xl object-cover border-solid border-4 border-neutral-400 md:h-36 md:w-36"
+                className="rounded-full object-cover border-solid border-4 border-neutral-400 md:h-36 md:w-36"
               />
               <h2 className="mt-4 text-[30px] subpixel-antialiased font-semibold mb-2">
-                {employee_profile?.user}
+                {employee_profile?.user.toLowerCase().replace(/\b\w/g, (s: string) => s.toUpperCase())}
               </h2>
               <p className="text-[17px]">{stringifiedDepartmentNames}</p>
               <small className="text-slate-400 text-[17px]">
@@ -193,7 +194,15 @@ const ProfileView = ({
                     />
                   </Form.Item>
                 </div>
-                <div className="grid gap-3">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Form.Item label="Contract">
+                    <Input
+                      placeholder="Contract"
+                      value={employee_profile_data?.contract}
+                      onChange={(e) => onChangeContract(e.target.value)}
+                    />
+                  </Form.Item>
+
                   <Form.Item label="Departments">
                     <Select
                       mode="multiple"
@@ -204,6 +213,8 @@ const ProfileView = ({
                       options={departments_api_data}
                     />
                   </Form.Item>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
                   <Form.Item label="Bio">
                     <Input placeholder="Bio" value={employee_profile_data?.bio} onChange={(e) => handleChangeBio(e.target.value)}/>
                   </Form.Item>

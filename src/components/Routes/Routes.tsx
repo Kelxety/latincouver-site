@@ -10,6 +10,7 @@ import HRContainer from "../HR/HRContainer"
 import EmployeesContainer from "../HR/Employees/EmployeesContainer"
 import ProfileContainer from "../HR/Employees/Profile/ProfileContainer"
 import VolunteerContainer from "../HR/Volunteers/VolunteerContainer"
+import VolunteerProfileContainer from "../HR/Volunteers/Profile/VolunteerProfileContainer"
 
 // Auth
 import LoginPage from "../auth/LoginPage"
@@ -47,7 +48,7 @@ const Routes = () => {
             },
             {
               path: "hr/volunteers/volunteer/:volunteerId",
-              element: <VolunteerContainer />,
+              element: <VolunteerProfileContainer />,
             },
           ]
         },

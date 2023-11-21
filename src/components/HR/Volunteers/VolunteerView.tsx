@@ -24,57 +24,84 @@ const onChange: TableProps<VolunteerDataType>["onChange"] = (
   console.log("params", pagination, filters, sorter, extra);
 };
 
-
-const columns: ColumnsType<VolunteerDataType> = [
-  {
-    title: 'First Name',
-    dataIndex: 'fname',
-    key: 'fname',
-    render: (text) => <a>{text}</a>,
-    sorter: (a, b) => a.fname.length - b.fname.length,
-  },
-  {
-    title: 'Last Name',
-    dataIndex: 'lname',
-    key: 'lname',
-    render: (text) => <a>{text}</a>,
-  },
-  {
-    title: 'Application',
-    dataIndex: 'application',
-    key: 'application',
-  },
-  {
-    title: 'Supervisor',
-    dataIndex: 'supervisor',
-    key: 'supervisor',
-  },
-  {
-    title: 'Action',
-    key: 'action',
-    render: (_, record) => (
-      <Space size="middle">
-        <Link to={`volunteer/${record.key}`} className='bg-primary btn-primary py-2.5 px-6 rounded-md'>Profile</Link>
-        <Link to={`/`} className='bg-danger btn-danger py-2.5 px-6 rounded-md'>Delete</Link>
-      </Space>
-    ),
-  },
-];
-
 type VolunteerProps = {
   volunteers: VolunteerDataType[],
+  confirmDelete: () => void,
+  showModal: () => void,
+  contextHolder: React.ReactElement<any, string | React.JSXElementConstructor<any>>,
+  volunteers_loading: boolean,
 }
 
-const VolunteerView = ({volunteers}: VolunteerProps) => {
+const VolunteerView = ({
+  volunteers, confirmDelete, showModal, contextHolder, volunteers_loading
+}: VolunteerProps) => {
+
+
+  const columns: ColumnsType<VolunteerDataType> = [
+    {
+      title: 'First Name',
+      dataIndex: 'first_name',
+      key: 'first_name',
+      render: (text, record) => <Link to={`volunteer/${record.key}`}>{text.toLowerCase().replace(/\b\w/g, (s: string) => s.toUpperCase())}</Link>,
+    },
+    {
+      title: 'Last Name',
+      dataIndex: 'last_name',
+      key: 'last_name',
+      render: (text, record) => <Link to={`volunteer/${record.key}`}>{text.toLowerCase().replace(/\b\w/g, (s: string) => s.toUpperCase())}</Link>,
+    },
+    {
+      title: 'Application',
+      dataIndex: 'application_name',
+      key: 'application_name',
+      render: (text) => <>{text.toLowerCase().replace(/\b\w/g, (s: string) => s.toUpperCase())}</>,
+    },
+    {
+      title: 'Supervisor',
+      dataIndex: 'supervisor_name',
+      key: 'supervisor_name',
+      render: (text) => <>{text.toLowerCase().replace(/\b\w/g, (s: string) => s.toUpperCase())}</>,
+    },
+    {
+      title: 'Country',
+      dataIndex: 'country',
+      key: 'country',
+    },
+    {
+      title: 'Latitude',
+      dataIndex: 'latitude',
+      key: 'latitude',
+    },
+    {
+      title: 'Longitude',
+      dataIndex: 'longitude',
+      key: 'longitude',
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (_, record) => (
+        <div className='flex justify-start'>
+        <Space size="middle">
+          <Link to={`volunteer/${record.key}`} className='bg-primary btn-primary text-sm py-1.5 px-3 rounded-md hover:no-underline'>Profile</Link>
+          <Button onClick={confirmDelete} className='text-sm' type='primary' danger>Delete</Button>
+          {contextHolder}
+        </Space>
+      </div>
+      ),
+    },
+  ];
 
   return (
     <>
-      <div className='mb-3 flex justify-end'>
-        <Button type="primary" className='bg-primary btn-primary' disabled>
+      <div className='mb-3 flex justify-between'>
+        <h1>Volunteers</h1>
+        <Button type="primary" className='bg-primary btn-primary' onClick={showModal}>
           Add Volunteers
         </Button>
       </div>
-      <Table columns={columns} dataSource={volunteers} onChange={onChange} />
+
+      <Table columns={columns} dataSource={volunteers} onChange={onChange} loading={volunteers_loading} />
     </>
   )
 }
