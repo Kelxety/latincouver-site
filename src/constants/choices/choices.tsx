@@ -126,3 +126,23 @@ export const LEAVE_TYPES: objectProps[] = [
         label: "Day-Off"
     }
 ]
+
+
+export const LANGUAGE_SPOKEN_CHOICES: objectProps[] = [
+    {
+        key: "ENGLISH",
+        label: "English",
+    },
+    {
+        key: "SPANISH",
+        label: "Spanish"
+    },
+    {
+        key: "PORTUGUESE",
+        label: "Portuguese"
+    },
+    {
+        key: "OTHER",
+        label: "Other"
+    }
+]
