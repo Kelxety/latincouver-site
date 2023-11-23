@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Space, Table, Tag, Button, Modal, Input, Select, InputNumber, Checkbox, DatePicker, Upload, message } from 'antd';
+import { Space, Table, Tag, Button, Modal, Input, Select, InputNumber, Checkbox, DatePicker, Upload, message, Alert } from 'antd';
 import type { ColumnsType,TableProps } from 'antd/es/table';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { Link } from 'react-router-dom';
@@ -25,7 +25,6 @@ type EmployeeProps = {
   open: boolean,
   confirmLoading: boolean,
   handleCancel: () => void,
-  handleOk: () => void,
   showModal: () => void,
   employee_data_loading: boolean,
   confirmDelete: (pk: number, fname: string, lname: string) => void,
@@ -47,14 +46,18 @@ type EmployeeProps = {
   handleChangeUser: (value: number) => void,
   onChangeAllergies: (value: string) => void,
   onChangeMedicalCondition: (value: string) => void,
+  onChangeUploadProfile: (img: any) => void,
+  handleSubmitEmployeeData: () => void,
+  contextHolderAlert: React.ReactElement<any, string | React.JSXElementConstructor<any>>
 
 }
 
 const EmployeeView = ({
-  employee_res_data, open, confirmLoading, handleCancel, handleOk, showModal, employee_data_loading,
+  employee_res_data, open, confirmLoading, handleCancel, showModal, employee_data_loading,
   confirmDelete, contextHolder, departments_api_data, handleChangeDepartments, job_titles, onChangeFormJobTitle, handleChangeWorkType,
   users_api_data, onChangeStartDate, onChangeEndDate, onChangeIsManager, handleChangeBio, handleChangeNotes, handleChangeContract,
-  handleChangeGender, onChangeSalary, handleChangeUser, onChangeAllergies, onChangeMedicalCondition
+  handleChangeGender, onChangeSalary, handleChangeUser, onChangeAllergies, onChangeMedicalCondition,
+  onChangeUploadProfile, handleSubmitEmployeeData, contextHolderAlert
 }: EmployeeProps) => {
 
   const columns: ColumnsType<any> = [
@@ -101,11 +104,13 @@ const EmployeeView = ({
       title: 'Start Date',
       dataIndex: 'start_date',
       key: 'start_date',
+      render: (text) => <>{text ?? "No Date Provided"}</>
     },
     {
       title: 'End Date',
       dataIndex: 'end_date',
       key: 'end_date',
+      render: (text) => <>{text ?? "No Date Provided"}</>
     },
     {
       title: 'Manager',
@@ -142,29 +147,12 @@ const filterOption = (input: string, option?: { label: string; value: string }) 
   (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
 
-  const props: UploadProps = {
-    name: "file",
-    action: "https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188",
-    headers: {
-      authorization: "authorization-text"
-    },
-    onChange(info) {
-      if (info.file.status !== "uploading") {
-        console.log(info.file, info.fileList);
-      }
-      if (info.file.status == "uploading") {
-      }
-      if (info.file.status === "done") {
-        message.success(`${info.file.name} file uploaded successfully`);
-      } else if (info.file.status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    }
-  };
+  const handleUploadImage = (info: any) => { onChangeUploadProfile(info); };
 
 
   return (
     <>
+      {contextHolderAlert}
       <div className='mb-3 flex justify-between'>
         <h1>Employees</h1>
         <Button type="primary" className='bg-primary btn-primary' onClick={showModal}>
@@ -177,7 +165,7 @@ const filterOption = (input: string, option?: { label: string; value: string }) 
       <Modal
         title="Add Employee"
         open={open}
-        onOk={handleOk}
+        onOk={handleSubmitEmployeeData}
         confirmLoading={confirmLoading}
         onCancel={handleCancel}
         destroyOnClose={true}
@@ -207,8 +195,8 @@ const filterOption = (input: string, option?: { label: string; value: string }) 
                 placeholder="Work Type"
                 onChange={handleChangeWorkType}
                 options={[
-                  { value: "FT", label: "Full Time" },
-                  { value: "PT", label: "Part Time" },
+                  { value: 1, label: "Full Time" },
+                  { value: 2, label: "Part Time" },
                 ]}
               />
             </div>
@@ -260,9 +248,9 @@ const filterOption = (input: string, option?: { label: string; value: string }) 
                 style={{ width: "auto" }}
                 onChange={handleChangeGender}
                 options={[
-                  { value: 'ML', label: 'Male' },
-                  { value: 'FM', label: 'Female' },
-                  { value: 'OT', label: 'Others' },
+                  { value: 1, label: 'Male' },
+                  { value: 2, label: 'Female' },
+                  { value: 3, label: 'Others' },
                 ]}
               />
             </div>
@@ -283,9 +271,7 @@ const filterOption = (input: string, option?: { label: string; value: string }) 
             </div>
           </div>
           <div>
-            <Upload {...props}>
-              <Button icon={<UploadOutlined />}>Upload Profile Picture</Button>
-            </Upload>
+            <input type="file" id="img" name="img" accept="image/*" onChange={handleUploadImage}></input>
           </div>
         </form>
       </Modal>

@@ -24,18 +24,28 @@ const LoginPage = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:8000/api/token/', credentials);
+      const response = await axios.post('http://localhost:8000/api/token/', credentials, {
+        headers: {'Content-Type': 'application/json'},
+        // withCredentials: true
+      });
       // const { token, refreshToken } = response.data;
       const { access, refresh } = response.data;
+
+      console.log(`JWT'S... ${access} ${refresh}`);
       // Store the tokens in localStorage or secure cookie for later use
       localStorage.setItem('access', access);
       localStorage.setItem('refresh', refresh);
 
+      axios.defaults.headers.common['Authorization'] = `Bearer ${access}`;
+
       console.log('success..');
       navigate('/');
+
     } catch (error) {
+
       console.log("There's a problem in loggin in");
       console.log(error);
+
       // Handle login error
     }
   };

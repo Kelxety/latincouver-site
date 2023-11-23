@@ -2,21 +2,25 @@ import React, { useEffect, useMemo, useState } from 'react'
 import ProfileView from "./ProfileView"
 import { useParams } from 'react-router-dom';
 
-import { HR_EMPLOYEE_DETAIL, JOB_TITLES, HR_DEPARTMENTS, HR_EMPLOYEES } from "../../../../constants/api/hr"
+import { JOB_TITLES, HR_DEPARTMENTS, HR_EMPLOYEES } from "../../../../constants/api/hr"
 
 import api from "../../../../constants/Interceptor/Interceptor"
-import { useQuery } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
-import type { DatePickerProps } from 'antd';
+import { notification } from 'antd';
 
-import dayjs from 'dayjs';
+
+import { format } from 'date-fns';
+
+type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
 function ProfileContainer() {
 
     const params: any = useParams();
 
     const [employee_profile_data, setEmployeeProfileData] = useState<any>();
+    const [apiAlert, contextHolder] = notification.useNotification();
 
     const employeeID: number = params.employeeId;
 
@@ -29,24 +33,21 @@ function ProfileContainer() {
     let employee_profile = useMemo(()=> {
       return {
         pk: profile_data?.pk,
-        user: `${profile_data?.user_info?.first_name} ${profile_data?.user_info?.last_name}`,
+        user: profile_data?.user,
+        user_info: `${profile_data?.user_info?.first_name} ${profile_data?.user_info?.last_name}`,
         department: profile_data?.department_names,
         title: profile_data?.title,
         bio: profile_data?.bio,
         notes: profile_data?.notes,
         contract: profile_data?.contract,
         gender: profile_data?.gender,
-        work_type: profile_data?.work_type === 1 ? "FT" : "PT",
-        pay_method: profile_data?.pay_method === 1 ? "SL" : "HR",
+        work_type: profile_data?.work_type,
+        pay_method: profile_data?.pay_method,
         salary: parseFloat(profile_data?.salary),
         is_manager: profile_data?.is_manager,
-        start_date: profile_data?.start_date !== null ? dayjs(profile_data?.start_date, "YYYY-MM-DD") : "",
-        end_date: profile_data?.end_date !== null ? dayjs(profile_data?.end_date, "YYYY-MM-DD") : "",
-        // start_date: profile_data?.start_date !== null ? moment(profile_data?.start_date) : null,
-        // end_date: profile_data?.end_date !== null ? moment(profile_data?.end_date) : null,
-        // start_date: profile_data?.start_date ?? null,
-        // end_date: profile_data?.end_date ?? null,
-        medical_conditions: profile_data?.medical_conditions,
+        start_date: profile_data?.start_date ?? "",
+        end_date: profile_data?.end_date ?? "",
+        medical_condition: profile_data?.medical_condition,
         allergies: profile_data?.allergies,
         photo: profile_data?.photo
 
@@ -89,12 +90,6 @@ function ProfileContainer() {
       })
     }, [department_res_data])
 
-    // for(let x = 0; x < employee_profile?.department?.length; x++){
-    //   const department = departments_api_data?.find((obj: any) => obj.label === employee_profile?.department[x].toUpperCase());
-    //   // profile_department.push(department);
-    //   profile_department.push(department.value);
-    // }
-
     const profile_department: any[] = useMemo(() => {
 
       const depart_list: any[] = [];
@@ -117,8 +112,6 @@ function ProfileContainer() {
 
 
     const handleChangeDepartments = (value: string[]) => {
-      console.log(`value`);
-      console.log(value);
 
       setEmployeeProfileData((prevState: any) => ({
         ...prevState,
@@ -148,8 +141,6 @@ function ProfileContainer() {
     }
     
     const onChangeIsManager = (e: CheckboxChangeEvent) => {
-      console.log(`${e.target.checked}`);
-
       setEmployeeProfileData((prevState: any) => ({
         ...prevState,
         is_manager: e.target.checked,
@@ -181,7 +172,7 @@ function ProfileContainer() {
     const onChangeMedicalCondition = (value: string) => {
       setEmployeeProfileData((prevState: any) => ({
         ...prevState,
-        medical_conditions: value,
+        medical_condition: value,
       }));
     }
 
@@ -192,17 +183,21 @@ function ProfileContainer() {
       }));
     };
 
-    const onChangeStartDate: DatePickerProps['onChange'] = (date) => {
+    const onChangeStartDate = (date: any) => {
+      const originalDate = new Date(date);
+      const formattedDate = format(originalDate, 'yyyy-MM-dd');
       setEmployeeProfileData((prevState: any) => ({
         ...prevState,
-        start_date: date,
+        start_date: formattedDate,
       }));
     };
 
-    const onChangeEndDate: DatePickerProps['onChange'] = (date) => {
+    const onChangeEndDate = (date: any) => {
+      const originalDate = new Date(date);
+      const formattedDate = format(originalDate, 'yyyy-MM-dd');
       setEmployeeProfileData((prevState: any) => ({
         ...prevState,
-        end_date: date,
+        end_date: formattedDate,
       }));
     };
 
@@ -213,6 +208,36 @@ function ProfileContainer() {
       }));
     }
 
+    const openNotificationWithIcon = (type: NotificationType, msg: string, description: string) => {
+      apiAlert[type]({
+        message: msg,
+        description: description,
+      });
+    };
+
+    const { mutateAsync: updateEmployee } = useMutation({
+      mutationFn: () =>
+        api.put(`${HR_EMPLOYEES}${employee_profile_data?.pk}/`, employee_profile_data).then((res) => res.data),
+
+        onSuccess: () => {
+          const message: string = 'Employee Record Updated'
+          const description: string = 'This Employee profile has been updated successfully!'
+          openNotificationWithIcon('success', message, description);
+        },
+        onError: (error, variables, context) => {
+          const message: string = 'Employee Record Update Failed'
+          const description: string = "There's something wrong when updating this record. try again."
+          openNotificationWithIcon('error', message, description);
+        },
+    });
+
+    const SubmitUpdateForm = () => {
+      delete employee_profile_data.user_info;
+      delete employee_profile_data.photo;
+      updateEmployee();
+    }
+
+
     return (
       <
         ProfileView
@@ -222,7 +247,8 @@ function ProfileContainer() {
         departments_api_data={departments_api_data} onChangeIsManager={onChangeIsManager} profile_department={profile_department}
         handleChangeNotes={handleChangeNotes} handleChangeBio={handleChangeBio} onChangeAllergies={onChangeAllergies}
         onChangeMedicalCondition={onChangeMedicalCondition} employee_profile_data={employee_profile_data} onChangeSalary={onChangeSalary}
-        onChangeStartDate={onChangeStartDate} onChangeEndDate={onChangeEndDate} onChangeContract={onChangeContract}
+        onChangeStartDate={onChangeStartDate} onChangeEndDate={onChangeEndDate} onChangeContract={onChangeContract} SubmitUpdateForm={SubmitUpdateForm}
+        contextHolder={contextHolder}
       />
     )
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Form,
@@ -38,6 +38,8 @@ type EmployeeProfileProps = {
   onChangeStartDate: any,
   onChangeEndDate: any,
   onChangeContract: (value: string) => void,
+  SubmitUpdateForm: () => void,
+  contextHolder: React.ReactElement<any, string | React.JSXElementConstructor<any>>,
 };
 
 
@@ -64,18 +66,27 @@ const ProfileView = ({
   onChangeStartDate,
   onChangeEndDate,
   onChangeContract,
+  SubmitUpdateForm,
+  contextHolder
 }: EmployeeProfileProps) => {
-  const [form] = Form.useForm();
 
-  const [formLayout, setFormLayout] = useState<LayoutType>("vertical");
+  const [startDate, setStartDate] = useState<any>();
+  const [endDate, setEndDate] = useState<any>();
 
-  const onFormLayoutChange = ({ layout }: { layout: LayoutType }) => {
-    setFormLayout(layout);
-  };
+  useEffect(()=> {
+    setStartDate(dayjs(employee_profile_data?.start_date, "YYYY-MM-DD"));
+    setEndDate(dayjs(employee_profile_data?.end_date, "YYYY-MM-DD"));
+
+    return () => {
+      setStartDate(null);
+      setEndDate(null);
+    }
+  }, [employee_profile_data]);
 
   const stringifiedDepartmentNames: string = employee_profile?.department?.length === 1 ? employee_profile?.department[0].toUpperCase() : employee_profile?.department?.join(", ").toUpperCase();
   return (
     <>
+      {contextHolder}
       <section className="grid gap-4 md:grid-cols-2">
         {profile_loading ? (
           <Spin spinning={profile_loading} fullscreen />
@@ -85,10 +96,10 @@ const ProfileView = ({
               <img
                 src={employee_profile?.photo}
                 alt=""
-                className="rounded-full object-cover border-solid border-4 border-neutral-400 md:h-36 md:w-36"
+                className="rounded-full object-cover text-center border-solid border-4 border-neutral-400 md:h-32 md:w-32"
               />
               <h2 className="mt-4 text-[30px] subpixel-antialiased font-semibold mb-2">
-                {employee_profile?.user.toLowerCase().replace(/\b\w/g, (s: string) => s.toUpperCase())}
+                {employee_profile?.user_info.toLowerCase().replace(/\b\w/g, (s: string) => s.toUpperCase())}
               </h2>
               <p className="text-[17px]">{stringifiedDepartmentNames}</p>
               <small className="text-slate-400 text-[17px]">
@@ -100,54 +111,51 @@ const ProfileView = ({
               </small>
             </div>
             <div className="bg-white shadow-lg rounded-lg xl:col-span-1 p-3.5">
-              <Form
-                layout={formLayout}
-                form={form}
-                initialValues={{ layout: formLayout }}
-                onValuesChange={onFormLayoutChange}
-                // style={{ maxWidth: formLayout === "inline" ? "none" : 600 }}
-                className="w-full"
-                size={"large"}
+              <form
               >
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <Form.Item label="Job Title">
+                  <div className='grid gap-1 my-4'>
+                    <label htmlFor="">Job Title</label>
                     <Select
                       style={{ width: "100%" }}
                       onChange={handleChangeJobTitle}
                       options={job_titles}
                       value={employee_profile_data?.title}
                     />
-                  </Form.Item>
-                  <Form.Item label="Work Type">
+                  </div>
+                  <div className='grid gap-1 my-4'>
+                    <label htmlFor="">Work Type</label>
                     <Select
-                      defaultValue={
+                      value={
                         employee_profile_data?.work_type
                       }
                       style={{ width: "100%" }}
                       onChange={handleChangeWorkType}
                       options={[
-                        { value: "FT", label: "Full Time" },
-                        { value: "PT", label: "Part Time" },
+                        { value: 1, label: "Full Time" },
+                        { value: 2, label: "Part Time" },
                       ]}
                     />
-                  </Form.Item>
+                  </div>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <Form.Item label="Payment Method">
+                  <div className='grid gap-1 my-4'>
+                    <label htmlFor="">Payment Method</label>
                     <Select
-                      defaultValue={
+                      value={
                         employee_profile_data?.pay_method
                       }
                       style={{ width: "100%" }}
                       onChange={handleChangePaymentMethod}
                       options={[
-                        { value: "SL", label: "Salary" },
-                        { value: "HR", label: "Hourly" },
+                        { value: 1, label: "Salary" },
+                        { value: 2, label: "Hourly" },
                       ]}
                     />
-                  </Form.Item>
+                  </div>
 
-                  <Form.Item label="Salary">
+                  <div className='grid gap-1 my-4'>
+                    <label htmlFor="">Salary</label>
                     <InputNumber
                       min={0}
                       max={999999}
@@ -155,55 +163,64 @@ const ProfileView = ({
                       onChange={(e) => onChangeSalary(e)}
                       style={{ width: "100%" }}
                     />
-                  </Form.Item>
+                  </div>
                 </div>
                 <div className="grid gap-3 min-[425px]:grid-cols-2">
-                  <Form.Item label="Start Date">
+                  <div className='grid gap-1 my-4'>
+                    <label htmlFor="">Start Date</label>
                     <DatePicker
-                      format={"YYYY-MM-DD"}
                       placeholder="Start Date"
                       style={{ width: "100%" }}
-                      value={employee_profile_data?.start_date}
+                      // value={employee_profile_data?.start_date}
+                      value={startDate}
                       onChange={onChangeStartDate}
                     />
-                  </Form.Item>
-                  <Form.Item label="End Date">
+                  </div>
+                  <div className='grid gap-1 my-4'>
+                    <label htmlFor="">End Date</label>
                     <DatePicker
                       format={"YYYY/MM/DD"}
                       placeholder="End Date"
                       style={{ width: "100%" }}
-                      value={employee_profile_data?.end_date}
+                      // value={employee_profile_data?.end_date}
+                      value={endDate}
                       onChange={onChangeEndDate}
                     />
-                  </Form.Item>
+                  </div>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <Form.Item label="Allergies">
+
+                  <div className='grid gap-1 my-4'>
+                    <label htmlFor="">Allergies</label>
                     <Input
                       placeholder="Allergies"
                       value={employee_profile_data?.allergies}
                       onChange={(e) => onChangeAllergies(e.target.value)}
                     />
-                  </Form.Item>
-                  <Form.Item label="Medical Condition">
+                  </div>
+                  <div className='grid gap-1 my-4'>
+                    <label htmlFor="">Medical Condition</label>
                     <Input
                       placeholder="Medical Condition"
                       value={employee_profile_data?.medical_condition}
                       onChange={(e) => onChangeMedicalCondition(e.target.value)}
                     />
-                  </Form.Item>
+                  </div>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <Form.Item label="Contract">
+
+                  <div className='grid gap-1 my-4'>
+                    <label htmlFor="">Contract</label>
                     <Input
                       placeholder="Contract"
                       value={employee_profile_data?.contract}
                       onChange={(e) => onChangeContract(e.target.value)}
                     />
-                  </Form.Item>
+                  </div>
 
-                  <Form.Item label="Departments">
+                  <div className='grid gap-1 my-4'>
+                    <label htmlFor="">Departments</label>
                     <Select
                       mode="multiple"
                       defaultValue={profile_department}
@@ -212,33 +229,39 @@ const ProfileView = ({
                       onChange={handleChangeDepartments}
                       options={departments_api_data}
                     />
-                  </Form.Item>
+                  </div>
+
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <Form.Item label="Bio">
+
+                  <div className='grid gap-1 my-4'>
+                    <label htmlFor="">Bio</label>
                     <Input placeholder="Bio" value={employee_profile_data?.bio} onChange={(e) => handleChangeBio(e.target.value)}/>
-                  </Form.Item>
-                  <Form.Item label="Notes">
+                  </div>
+
+                  <div className='grid gap-1 my-4'>
+                    <label htmlFor="">Notes</label>
                     <Input
                       placeholder="Notes"
                       value={employee_profile_data?.notes}
                       onChange={(e) => handleChangeNotes(e.target.value)}
                     />
-                  </Form.Item>
-                  <Form.Item>
+                  </div>
+
+                  <div className='grid gap-1 my-4'>
                     <Checkbox onChange={onChangeIsManager} checked={employee_profile_data?.is_manager}>Is Manager</Checkbox>
-                  </Form.Item>
+                  </div>
                 </div>
                 <Form.Item>
                   <Button
                     type="primary"
                     className="btn-primary bg-primary"
-                    disabled
+                    onClick={SubmitUpdateForm}
                   >
                     Update Profile
                   </Button>
                 </Form.Item>
-              </Form>
+              </form>
             </div>
           </>
         )}

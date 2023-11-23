@@ -22,3 +22,7 @@ export const HR_EMERGENCY_CONTACT: string =  `${hr}/emergency-contact/`
 // Departments
 export const HR_DEPARTMENTS: string =  `${hr}/departments/`
 
+
+// countries
+export const COUNTRIES_API: string =  `v1/countries/choices/`
+

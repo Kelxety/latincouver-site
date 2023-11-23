@@ -1,5 +1,5 @@
 // import React, { useState } from 'react'
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import Dashboard from '../Dashboard/Dashboard';
 
 import Navbar from "./Navbar"
@@ -10,7 +10,7 @@ const HomePage = () => {
   return (
     <>
       <div className="container-scroller d-flex">
-        <Navbar/>
+        <Navbar />
         <div className='container-fluid page-body-wrapper'>
           <TopNavbar/>
           <div className="main-panel">

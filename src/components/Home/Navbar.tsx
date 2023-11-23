@@ -1,31 +1,17 @@
 import {
-  mdiAccountCircle,
   mdiAccountGroup,
-  mdiArrowRightThin,
   mdiCalendar,
-  mdiCalendarAccount,
-  mdiCogOutline,
   mdiCurrencyUsd,
   mdiHandshake,
   mdiLogout,
-  mdiMenu,
   mdiNotebook,
   mdiViewDashboardVariant,
 } from "@mdi/js";
 import Icon from "@mdi/react";
-import React, { useState } from "react";
 
 import { Link } from "react-router-dom";
 
-import logo from "../../assets/images/logo.svg";
-import logomini from "../../assets/images/logomini.svg";
-import face2 from "../../assets/images/faces/face2.jpg";
-
-// import "../../App.css"
-
 function Navbar() {
-
-  const [sidebarHR, setsidebarHR] = useState<boolean>(false);
   
   return (
     <>
@@ -78,6 +64,13 @@ function Navbar() {
               {/* <i className="mdi mdi-emoticon menu-icon"></i> */}
               <Icon path={mdiCurrencyUsd} style={{"width": "20px", "height": "20px", "marginRight": "10px"}} className="menu-icon" />
               <span className="menu-title">Sales</span>
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link className="nav-link" to={"/"}>
+              {/* <i className="mdi mdi-emoticon menu-icon"></i> */}
+              <Icon path={mdiLogout} style={{"width": "20px", "height": "20px", "marginRight": "10px"}} className="menu-icon" />
+              <span className="menu-title">Logout</span>
             </Link>
           </li>
         </ul>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import default_profile_picture from "../../../../assets/images/profiles/default/default_profile_picture.png";
 import { Form, Input, Button, Select } from "antd";
@@ -9,13 +9,40 @@ type LayoutType = Parameters<typeof Form>[0]["layout"];
 
 type EmployeeProfileProps = {
   profile: any,
+  countriesAPI: any[],
+  handleChangeCountry: (value: string) => void,
+  volunteering_application: any[],
+  handleChangeApplication: (value: number) => void,
+  supervisor_data: any[],
+  handleChangeSupervisor: (value: number) => void,
+  SubmitUpdateForm: () => void,
+  contextHolderAlert: React.ReactElement<any, string | React.JSXElementConstructor<any>>,
 }
 
 
-const ProfileView = ({ profile }: EmployeeProfileProps) => {
+const ProfileView = ({
+  profile, countriesAPI, handleChangeCountry, volunteering_application, handleChangeApplication, supervisor_data,
+  handleChangeSupervisor, SubmitUpdateForm, contextHolderAlert
+}: EmployeeProfileProps) => {
     const [form] = Form.useForm();
 
     const [formLayout, setFormLayout] = useState<LayoutType>("vertical");
+
+    const [volunteerName, setVolunteerName] = useState<string>("");
+    const [volunteerProfile, setVolunteerProfile] = useState<any>(null);
+
+    useEffect(()=> {
+      setVolunteerName(profile?.user_info);
+      setVolunteerProfile(profile?.photo);
+
+      return () => {
+        setVolunteerName("");
+        setVolunteerProfile(null);
+      }
+    }, [profile]);
+
+    console.log("volunteerName");
+    console.log(volunteerName);
 
     const onFormLayoutChange = ({ layout }: { layout: LayoutType }) => {
         setFormLayout(layout);
@@ -28,12 +55,17 @@ const ProfileView = ({ profile }: EmployeeProfileProps) => {
 
   return (
     <>
+      {contextHolderAlert}
       <section className="grid gap-4 md:grid-cols-2">
         <div className="bg-white text-center p-12 shadow-md md:h-80 md:flex md:flex-col md:items-center xl:w-full">
-          <img src={profile?.photo} alt="" className="rounded-full object-cover text-center border-solid border-4 border-neutral-400 md:h-32 md:w-32" />
+          <img src={volunteerProfile} alt="" className="rounded-full object-cover text-center border-solid border-4 border-neutral-400 md:h-32 md:w-32" />
           <h2 className="mt-4 text-[25px] subpixel-antialiased font-semibold mb-2">
-            {profile?.user_info}
+            {/* {profile?.user_info.toLowerCase().replace(/\b\w/g, (s: string) => s.toUpperCase())} */}
+            {volunteerName}
           </h2>
+          <small className="text-slate-400 text-[15px]">
+            VOLUNTEER
+          </small>
           <small className="text-slate-400 text-[15px]">
             {profile?.gender === 1 ? "Male" : profile?.gender === 2 ? "Female" : "Male"}
           </small>
@@ -51,10 +83,24 @@ const ProfileView = ({ profile }: EmployeeProfileProps) => {
           >
             <div className="grid gap-3 sm:grid-cols-2">
                 <Form.Item label="Application">
-                    <Input placeholder="Application" value={profile?.applciation_name} />
+                  <Select
+                    showSearch
+                    onSearch={onSearch}
+                    value={profile?.application}
+                    style={{ width: "100%" }}
+                    onChange={handleChangeApplication}
+                    options={volunteering_application}
+                  />
                 </Form.Item>
                 <Form.Item label="Supervisor">
-                    <Input placeholder="supervisor" value={profile?.salary} />
+                  <Select
+                    showSearch
+                    onSearch={onSearch}
+                    value={profile?.supervisor}
+                    style={{ width: "100%" }}
+                    onChange={handleChangeSupervisor}
+                    options={supervisor_data}
+                  />
                 </Form.Item>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -62,20 +108,15 @@ const ProfileView = ({ profile }: EmployeeProfileProps) => {
                   <Select
                     showSearch
                     onSearch={onSearch}
-                    defaultValue="lucy"
-                    style={{ width: 200 }}
-                    // onChange={handleChange}
-                    options={[
-                      { value: 'jack', label: 'Jack' },
-                      { value: 'lucy', label: 'Lucy' },
-                      { value: 'Yiminghe', label: 'yiminghe' },
-                      { value: 'disabled', label: 'Disabled', disabled: true },
-                    ]}
+                    value={profile?.country}
+                    style={{ width: 400 }}
+                    onChange={handleChangeCountry}
+                    options={countriesAPI}
                   />
                 </Form.Item>
             </div>
             <Form.Item>
-              <Button type="primary" className="btn-primary bg-primary" disabled>Update Profile</Button>
+              <Button type="primary" className="btn-primary bg-primary" onClick={SubmitUpdateForm}>Update Profile</Button>
             </Form.Item>
 
           </Form>
