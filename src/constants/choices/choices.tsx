@@ -1,12 +1,12 @@
-interface objectProps { key: string, label: string }
+interface objectProps { key: string | number, label: string }
 
 export const paymentMethod: objectProps[] = [
     {
-        key: "SL",
+        key: 1,
         label: "Salary"
     },
     {
-        key: "HR",
+        key: 2,
         label: "Hourly"
     }
 ]
@@ -14,15 +14,15 @@ export const paymentMethod: objectProps[] = [
 
 export const genderChoices: objectProps[] = [
     {
-        key: "ML",
+        key: 1,
         label: "Male"
     },
     {
-        key: "FM",
+        key: 2,
         label: "Female"
     },
     {
-        key: "OT",
+        key: 3,
         label: "Others"
     }
 ]
@@ -30,22 +30,22 @@ export const genderChoices: objectProps[] = [
 
 export const workType: objectProps[] = [
     {
-        key: "FT",
+        key: 1,
         label: "Full Time"
     },
     {
-        key: "PT",
+        key: 2,
         label: "Part Time"
     }
 ]
 
 export const StatusChoices: objectProps[] = [
     {
-        key: "AC",
+        key: 1,
         label: "Active"
     },
     {
-        key: "AR",
+        key: 2,
         label: "Archive"
     }
 ]
@@ -53,15 +53,15 @@ export const StatusChoices: objectProps[] = [
 
 export const LocationChoices: objectProps[] = [
     {
-        key: "RM",
+        key: 1,
         label: "Remote"
     },
     {
-        key: "OF",
+        key: 2,
         label: "Office"
     },
     {
-        key: "EV",
+        key: 3,
         label: "At Event"
     }
 ]
@@ -127,22 +127,37 @@ export const LEAVE_TYPES: objectProps[] = [
     }
 ]
 
+export const STATUS_CHOICES: objectProps[] = [
+    {
+        key: "Pending",
+        label: "Pending",
+    },
+    {
+        key: "Accepted",
+        label: "Accepted"
+    },
+    {
+        key: "Rejected",
+        label: "Rejected"
+    }
+]
+
 
 export const LANGUAGE_SPOKEN_CHOICES: objectProps[] = [
     {
-        key: "ENGLISH",
+        key: 1,
         label: "English",
     },
     {
-        key: "SPANISH",
+        key: 2,
         label: "Spanish"
     },
     {
-        key: "PORTUGUESE",
+        key: 3,
         label: "Portuguese"
     },
     {
-        key: "OTHER",
+        key: 4,
         label: "Other"
     }
 ]
