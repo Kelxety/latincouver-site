@@ -9,7 +9,7 @@ import logo from '../../assets/images/logo.svg';
 import axios from 'axios';
 
 interface credentials {
-  username: string;
+  email: string;
   password: string;
 }
 
@@ -18,7 +18,7 @@ const LoginPage = () => {
 
   const [credentials, setCredentials] =
     useState<credentials>({
-      username: '',
+      email: '',
       password: '',
     });
 
@@ -127,16 +127,14 @@ const LoginPage = () => {
                       onSubmit={handleSubmit}
                       className='pt-3'
                     >
-                      <label htmlFor='username'>
-                        Username
+                      <label htmlFor='email'>
+                        email
                       </label>
                       <input
                         type='text'
-                        name='username'
-                        id='username'
-                        value={
-                          credentials.username
-                        }
+                        name='email'
+                        id='email'
+                        value={credentials.email}
                         onChange={handleChange}
                         className='w-full inline-block py-3 px-5 my-2 mx-0 border-2 border-[#6640b2] mb-3'
                       />

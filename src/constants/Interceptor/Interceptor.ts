@@ -1,15 +1,20 @@
 import axios from 'axios';
 
-import { BASE_ENDPOINT } from "../api/BaseEndpoint";
-import { REFRESH_TOKEN, VERIFY_TOKEN } from "../api/jwt"
+import { BASE_ENDPOINT } from '../api/BaseEndpoint';
+import {
+  REFRESH_TOKEN,
+  VERIFY_TOKEN,
+} from '../api/jwt';
 import { useNavigate } from 'react-router-dom';
 
-const api = axios.create({ baseURL: BASE_ENDPOINT, });
+const api = axios.create({
+  baseURL: BASE_ENDPOINT,
+});
 
 api.interceptors.request.use(
   async (config) => {
     const token = localStorage.getItem('access');
-    
+
     if (token) {
       // const response = await axios.post(`${BASE_ENDPOINT}/${VERIFY_TOKEN}`, { "token": token }, {
       //   headers: {'Content-Type': 'application/json'},
@@ -21,41 +26,58 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-export default api
-
-
+export default api;
 
 let refresh = false;
 // Add a response interceptor
-axios.interceptors.response.use(resp => resp, async error => {
-  if (error.response.status === 401 && !refresh) {
-     refresh = true;
-     
-     console.log(localStorage.getItem('refresh'))
+axios.interceptors.response.use(
+  (resp) => resp,
+  async (error) => {
+    if (
+      error.response.status === 401 &&
+      !refresh
+    ) {
+      refresh = true;
 
-     const refreshToken = localStorage.getItem('refresh');
-      const response = await axios.post(`${BASE_ENDPOINT}/${REFRESH_TOKEN}`, { refreshToken }, {
-        headers: {'Content-Type': 'application/json'},
-        // withCredentials: true
-      });
+      console.log(
+        localStorage.getItem('refresh')
+      );
 
+      const refreshToken =
+        localStorage.getItem('refresh');
+      const response = await axios.post(
+        `${BASE_ENDPOINT}/${REFRESH_TOKEN}`,
+        { refreshToken },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          // withCredentials: true
+        }
+      );
 
-    if (response.status === 200) {
-       axios.defaults.headers.common['Authorization'] = `Bearer 
+      if (response.status === 200) {
+        axios.defaults.headers.common[
+          'Authorization'
+        ] = `Bearer 
        ${response.data['access']}`;
-       localStorage.setItem('access', response.data.access);
-       localStorage.setItem('refresh', response.data.refresh);
+        localStorage.setItem(
+          'access',
+          response.data.access
+        );
+        localStorage.setItem(
+          'refresh',
+          response.data.refresh
+        );
 
-       return axios(error.config);
+        return axios(error.config);
+      }
     }
+
+    refresh = false;
+    return error;
   }
-
-refresh = false;
-return error;
-});
-
-
-
+);
 
 // Add a response interceptor
 
@@ -88,7 +110,7 @@ return error;
 //         // Check if the access token and refresh token are expired or invalid
 //         if (error.response.status === 401) {
 //           const navigate = useNavigate();
-          
+
 //           localStorage.removeItem('token');
 //           localStorage.removeItem('refresh');
 
