@@ -1,3 +1,5 @@
+import { ApiResponse } from './Response';
+
 export interface CustomUserDataType {
   id: number;
   username: string;
@@ -33,4 +35,5 @@ export interface UsersDataType {
   key: number;
   first_name: string;
   last_name: string;
+  user_email: string;
 }

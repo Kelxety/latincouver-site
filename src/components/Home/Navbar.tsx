@@ -9,6 +9,7 @@ import {
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Popconfirm, message } from 'antd';
+import companylogo from '../../assets/images/Latincouver_Color.png';
 
 import {
   Link,
@@ -36,6 +37,19 @@ function Navbar() {
         id='sidebar'
       >
         <ul className='nav'>
+          {/* <li className='nav-item'>
+            <Link className='nav-link' to={'hr/'}>
+              <img
+                src={companylogo}
+                width={200}
+                alt=''
+              />
+              <span className='menu-title'>
+                Human resources
+              </span>
+            </Link>
+          </li> */}
+
           <li className='nav-item sidebar-category'>
             <p>Navigation</p>
             <span></span>

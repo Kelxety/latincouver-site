@@ -1,5 +1,7 @@
-import LoginPagefrom from "./LoginPage"
+import LoginPagefrom from './LoginPage';
 
-function LoginContainer() { return <LoginPagefrom /> }
+function LoginContainer() {
+  return <LoginPagefrom />;
+}
 
-export default LoginContainer
+export default LoginContainer;

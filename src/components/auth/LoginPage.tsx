@@ -5,8 +5,10 @@ import React, {
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import logo from '../../assets/images/logo.svg';
+import logo from '../../assets/images/Latincouver_Color.png';
 import axios from 'axios';
+import { notification } from 'antd';
+import { userStore } from '../../constants/api/services/userService';
 
 interface credentials {
   email: string;
@@ -15,6 +17,7 @@ interface credentials {
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { addEmail } = userStore();
 
   const [credentials, setCredentials] =
     useState<credentials>({
@@ -38,16 +41,10 @@ const LoginPage = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          // withCredentials: true
         }
       );
-      // const { token, refreshToken } = response.data;
       const { access, refresh } = response.data;
 
-      console.log(
-        `JWT'S... ${access} ${refresh}`
-      );
-      // Store the tokens in localStorage or secure cookie for later use
       localStorage.setItem('access', access);
       localStorage.setItem('refresh', refresh);
 
@@ -55,15 +52,18 @@ const LoginPage = () => {
         'Authorization'
       ] = `Bearer ${access}`;
 
-      console.log('success..');
+      notification.success({
+        message: 'Successfully Login',
+        description: 'Welcome',
+      });
+      addEmail(credentials.email);
       navigate('/');
     } catch (error) {
-      console.log(
-        "There's a problem in loggin in"
-      );
+      notification.error({
+        message: 'Failed to login',
+        description: 'Invalid Credentials',
+      });
       console.log(error);
-
-      // Handle login error
     }
   };
 
@@ -114,45 +114,48 @@ const LoginPage = () => {
                 <div className='col-lg-6 d-flex align-items-center justify-content-center'>
                   <div className='auth-form-transparent text-left p-3'>
                     <div className='brand-logo'>
-                      <img
-                        src={logo}
-                        alt='logo'
-                      />
+                      <a href='/'>
+                        <img
+                          src={logo}
+                          alt='logo'
+                          width={'520px'}
+                        />
+                      </a>
                     </div>
                     <h4>Welcome back!</h4>
-                    <h6 className='font-weight-light'>
-                      Happy to see you again!
-                    </h6>
+
                     <form
                       onSubmit={handleSubmit}
                       className='pt-3'
                     >
-                      <label htmlFor='email'>
-                        email
-                      </label>
-                      <input
-                        type='text'
-                        name='email'
-                        id='email'
-                        value={credentials.email}
-                        onChange={handleChange}
-                        className='w-full inline-block py-3 px-5 my-2 mx-0 border-2 border-[#6640b2] mb-3'
-                      />
-                      <label htmlFor='password'>
-                        Password
-                      </label>
-                      <input
-                        type='password'
-                        name='password'
-                        value={
-                          credentials.password
-                        }
-                        onChange={handleChange}
-                        className='w-full inline-block py-3 px-5 my-2 mx-0 border-2 border-[#6640b2]'
-                      />
+                      <div className='flex items-center'>
+                        <input
+                          type='text'
+                          name='email'
+                          id='email'
+                          value={
+                            credentials.email
+                          }
+                          placeholder='Email...'
+                          onChange={handleChange}
+                          className='w-full rounded-lg py-2 inline-block px-2 my-2 mx-0 border-[1px] border-[#6640b2]/50 mb-3'
+                        />
+                      </div>
+                      <div className='flex items-center'>
+                        <input
+                          type='password'
+                          name='password'
+                          value={
+                            credentials.password
+                          }
+                          placeholder='Enter password...'
+                          onChange={handleChange}
+                          className='w-full rounded-lg inline-block py-2 px-2 my-2 mx-0 border-[1px] border-[#6640b2]/50'
+                        />
+                      </div>
                       <button
                         type='submit'
-                        className='py-3 px-5 my-2 mx-0 w-full inline-block rounded-none bg-primary text-white'
+                        className='py-1 rounded-lg px-5 my-2 mx-0 w-full inline-block bg-primary text-white'
                       >
                         Login
                       </button>
